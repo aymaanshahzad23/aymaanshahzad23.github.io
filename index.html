@@ -169,10 +169,13 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 #globe:active{cursor:grabbing}
 .ghint{position:absolute;right:0;bottom:0;font-size:12px;color:#AEB5AF}
 @media (max-width:900px){.travel{grid-template-columns:1fr}.globe-wrap{max-width:420px}}
-/* ---------- guitar neck ---------- */
-.neck{margin-top:clamp(56px,9vh,96px);position:relative}
-.neck svg{display:block;width:100%;height:clamp(170px,22vw,250px);touch-action:pan-y;cursor:crosshair}
-.neck figcaption{display:flex;justify-content:space-between;gap:16px;margin-top:14px;font-size:13px;color:#AEB5AF}
+/* ---------- DAW ---------- */
+.daw{margin-top:clamp(56px,9vh,96px);background:#161D1A;border:1px solid rgba(216,213,206,.12);border-radius:4px;padding:14px 14px 12px}
+.daw-top{display:flex;justify-content:space-between;align-items:baseline;padding:2px 4px 12px;border-bottom:1px solid rgba(216,213,206,.1);margin-bottom:10px}
+.daw-title{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--stone)}
+.daw-meta{font-size:12.5px;color:#AEB5AF;font-variant-numeric:tabular-nums}
+#dawCvs{display:block;width:100%;height:clamp(330px,34vw,400px);cursor:pointer}
+.daw figcaption{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:12px;padding:0 4px;font-size:13px;color:#AEB5AF}
 /* ---------- VII. off the clock ---------- */
 .index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 5vw}
 .index dl{border-top:1px solid var(--ink)}
@@ -422,9 +425,10 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
       </div>
     </div>
   </div>
-  <figure class="neck" id="neck">
-    <svg id="neckSvg" aria-hidden="true"></svg>
-    <figcaption><span id="neckHint">Press play on Growing Apart and the strings move to it</span><span>Low strings follow the bass, high strings the top end</span></figcaption>
+  <figure class="daw" id="daw">
+    <div class="daw-top"><span class="daw-title">Growing Apart</span><span class="daw-meta"><span id="dawPos">1.1</span> · 76 BPM</span></div>
+    <canvas id="dawCvs" role="img" aria-label="A music production timeline that writes in the drums, bass and keys of Growing Apart as the song plays"></canvas>
+    <figcaption><span id="dawHint">Press play and watch the track get built, one part at a time</span><span>Read from the finished mix, so it's close, not exact</span></figcaption>
   </figure>
 </section>
 
@@ -578,26 +582,7 @@ const wave = document.getElementById('wave'), song = document.getElementById('so
 const bars = PEAKS.map(p => { const b = document.createElement('i'); b.style.height = Math.max(8, p * 100) + '%'; wave.appendChild(b); return b; });
 const fmtT = x => Math.floor(x / 60) + ':' + String(Math.floor(x % 60)).padStart(2, '0');
 const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>', PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
-let songCtx = null, analyser = null, fbuf = null;
-function initAnalyser() {
-  if (songCtx) { if (songCtx.state === 'suspended') songCtx.resume(); return; }
-  try {
-    songCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const src = songCtx.createMediaElementSource(song);
-    analyser = songCtx.createAnalyser(); analyser.fftSize = 2048; analyser.smoothingTimeConstant = .72;
-    src.connect(analyser); analyser.connect(songCtx.destination);
-    fbuf = new Uint8Array(analyser.frequencyBinCount);
-  } catch (e) { songCtx = null; }
-}
-// six bands, low E string to high E string
-const BANDS = [[40, 110], [110, 220], [220, 440], [440, 900], [900, 2200], [2200, 6000]];
-window.__songLevels = () => {
-  if (!analyser || song.paused) return null;
-  analyser.getByteFrequencyData(fbuf);
-  const hz = songCtx.sampleRate / analyser.fftSize;
-  return BANDS.map(([lo, hi]) => { let sum = 0, n = 0; for (let i = Math.floor(lo / hz); i <= Math.ceil(hi / hz) && i < fbuf.length; i++) { sum += fbuf[i]; n++; } return n ? sum / n / 255 : 0; });
-};
-playBtn.addEventListener('click', () => { initAnalyser(); song.paused ? song.play() : song.pause(); });
+playBtn.addEventListener('click', () => song.paused ? song.play() : song.pause());
 song.addEventListener('play', () => { playBtn.innerHTML = PAUSE; playBtn.setAttribute('aria-label', 'Pause Growing Apart'); });
 song.addEventListener('pause', () => { playBtn.innerHTML = PLAY; playBtn.setAttribute('aria-label', 'Play Growing Apart'); });
 song.addEventListener('timeupdate', () => {
@@ -608,7 +593,7 @@ song.addEventListener('timeupdate', () => {
 });
 song.addEventListener('ended', () => { song.currentTime = 0; });
 const seek = e => { const r = wave.getBoundingClientRect(); song.currentTime = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * (song.duration || 185); };
-wave.addEventListener('click', e => { seek(e); initAnalyser(); if (song.paused) song.play(); });
+wave.addEventListener('click', e => { seek(e); if (song.paused) song.play(); });
 wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.currentTime += 5; if (e.key === 'ArrowLeft') song.currentTime -= 5; });
 
 /* ---------- travel globe (land dots precomputed from Natural Earth 110m) ---------- */
@@ -703,47 +688,105 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
   if (document.fonts) document.fonts.ready.then(draw);
 })();
 
-/* ---------- guitar neck, moved by the song ---------- */
+/* ---------- DAW view, written in as Growing Apart plays ---------- */
 (() => {
-  const svg = document.getElementById('neckSvg'), NS = 'http://www.w3.org/2000/svg';
-  let W = 0, H = 0, strings = [], last = null;
-  const amp = new Array(6).fill(0), phase = new Array(6).fill(0), base = [0, 0, 0, 0, 0, 0];
-  function el(tag, a, parent = svg) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; }
-  function build() {
-    W = svg.clientWidth; H = svg.clientHeight; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.innerHTML = '';
-    el('rect', { x: 0, y: H * .08, width: W, height: H * .84, fill: '#2A231C', rx: 3 });
-    const x0 = W * .04, scale = W * 1.9, fretX = [x0];
-    el('rect', { x: x0 - 6, y: H * .08, width: 7, height: H * .84, fill: '#D8D5CE', opacity: .85 });
-    for (let f = 1; f <= 14; f++) { const fx = x0 + scale * (1 - Math.pow(2, -f / 12)); if (fx > W) break; fretX.push(fx); el('rect', { x: fx - 1.2, y: H * .08, width: 2.4, height: H * .84, fill: '#8E8A80', opacity: .7 }); }
-    [3, 5, 7, 9, 12].forEach(f => {
-      if (!fretX[f]) return; const cx = (fretX[f] + fretX[f - 1]) / 2;
-      if (f === 12) { el('circle', { cx, cy: H * .32, r: 5, fill: '#D8D5CE', opacity: .4 }); el('circle', { cx, cy: H * .68, r: 5, fill: '#D8D5CE', opacity: .4 }); }
-      else el('circle', { cx, cy: H / 2, r: 5, fill: '#D8D5CE', opacity: .4 });
-    });
-    strings = [0, 1, 2, 3, 4, 5].map(i => {
-      const y = H * .16 + (5 - i) * (H * .68 / 5);
-      const glow = el('path', { d: `M0 ${y} L${W} ${y}`, fill: 'none', stroke: '#E2C792', 'stroke-width': 8, 'stroke-linecap': 'round', opacity: 0 });
-      const p = el('path', { d: `M0 ${y} L${W} ${y}`, fill: 'none', stroke: i < 3 ? '#C9B98F' : '#E4E1DA', 'stroke-width': 3.2 - i * .4, 'stroke-linecap': 'round' });
-      return { y, p, glow };
-    });
+  // drums, chords and bass read from the finished mix (beat-tracked, 16th-note grid)
+  const A = {"beats":[0.279,1.068,1.858,2.647,3.437,4.226,5.016,5.805,6.594,7.384,8.173,8.963,9.752,10.542,11.331,12.121,12.91,13.7,14.489,15.279,16.068,16.858,17.554,18.46,19.296,20.062,20.875,21.664,22.477,23.266,24.079,24.869,25.681,26.471,27.214,28.073,28.886,29.675,30.488,31.277,32.09,32.879,33.692,34.482,35.294,36.061,36.873,37.663,38.475,39.265,40.054,40.867,41.68,42.469,43.259,44.071,44.838,45.674,46.463,47.276,48.089,48.878,49.667,50.48,51.293,52.082,52.872,53.661,54.474,55.263,56.053,56.842,57.655,58.445,59.234,60.07,60.86,61.672,62.462,63.251,64.041,64.807,65.666,66.525,67.268,68.081,68.87,69.683,70.473,71.262,72.052,72.864,73.677,74.466,75.279,76.069,76.858,77.671,78.46,79.273,80.062,80.875,81.665,82.454,83.197,83.87,84.567,85.31,86.076,86.889,87.679,88.468,89.258,90.001,90.836,91.812,92.624,93.437,94.25,95.062,95.968,96.874,97.663,98.476,99.265,100.078,100.867,101.68,102.493,103.282,104.118,104.908,105.674,106.463,107.276,108.066,108.878,109.668,110.481,111.27,112.06,112.872,113.662,114.474,115.287,116.077,116.866,117.679,118.468,119.281,120.094,120.883,121.673,122.485,123.275,124.087,124.877,125.666,126.479,127.269,128.058,128.871,129.66,130.473,131.262,132.075,132.865,133.677,134.467,135.279,136.069,136.882,137.671,138.484,139.273,140.063,140.875,141.665,142.478,143.267,144.08,144.869,145.682,146.471,147.284,148.074,148.84,149.676,150.489,151.278,152.067,152.88,153.67,154.482,155.272,156.085,156.874,157.687,158.476,159.266,160.078,160.868,161.681,162.47,163.26,164.072,164.885,165.674,166.487,167.277,168.043,168.879,169.668,170.434,171.178,171.897,172.64,173.383,174.126,174.893,175.659,176.448,177.238,178.027,178.817,179.606,180.396,181.185,181.975,182.764,183.554,184.343,185.133],"kick":[93,95,111,112,124,125,127,128,138,143,144,156,157,159,175,188,189,191,192,201,202,207,208,218,224,239,252,255,265,266,303,335,336,348,349,351,352,368,381,384,393,394,465,477,480,495,496,505,506,508,511,527,528,541,543,544,560,572,573,575,576,586,592,605,608,623,624,636,637,640,648,650,656,669,671,672,687,688,700,701,703,704,713,714,719,720,732,733,735,736,751,752,763,764,765,768,777,778,783,784,796,797,799,800,816,828,829,831,832,842,871],"snare":[84,91,95,100,108,116,123,131,153,155,163,171,180,188,196,204,216,218,223,226,234,239,268,301,309,347,356,364,395,399,469,479,490,491,515,522,531,532,539,540,542,555,563,569,595,603,619,628,631,635,651,658,664,671,673,674,682,690,691,697,700,739,758,763,779,787,811,819,827,835],"hat":[84,91,100,116,123,124,153,169,171,180,188,196,202,204,211,212,218,223,225,227,235,237,243,248,249,265,268,336,339,347,351,356,360,362,364,372,377,379,380,387,399,408,409,445,459,479,484,491,527,531,532,535,537,539,540,553,558,563,566,568,573,579,581,585,587,591,595,599,601,603,609,611,613,619,628,633,637,641,653,654,656,657,658,659,663,664,665,667,671,674,675,681,690,691,697,700,703,708,713,716,727,729,739,749,755,769,771,773,777,779,781,783,787,791,793,796,809,811,819,827,833,835,838,842,843,845],"keys":[[],[],[],[],[1],[1,4],[1,4,9],[1,8,9],[11],[4,11],[4,11],[6,8,11],[3,6],[3,6],[3,6],[6,8],[1,6],[1,4,8],[6,11],[4,6],[1,9],[],[1],[8,11],[4,8,11],[],[],[4,11],[3,6,11],[],[],[3,4],[1,4],[1],[3,6],[3,8],[1,9],[],[],[8,11],[4,8,11],[],[],[4,8,11],[3,6,11],[3,6,11],[],[4,6],[1,4,6],[6],[3,8],[],[1,3],[1,3,4],[1,3,4],[1,4,11],[4,11],[3,4,11],[4,11],[4,11],[3,4,6],[3,4,6],[3,4,6],[6,8],[1,4,8],[1,4],[4,6],[3,4,11],[4,9,11],[4,9,11],[1,6,11],[1,8,11],[1,4,8],[1,4,11],[3],[4,8,11],[3,6,11],[3,4,6],[3,4,6],[6,8],[1,4,6],[],[3,4,11],[4,6,11],[1,4,11],[1,8,11],[3,6,11],[4,8,11],[1,4,8],[],[3],[4,6,11],[3,6,11],[3,4,6],[4,6,9],[6,8,9],[1,8],[1,8],[3,6,11],[],[1],[1,4],[1,4,11],[1,8,11],[4,8,11],[4,6,11],[4,11],[4],[3,4,11],[1,3,6],[3,6],[3,4,6],[1,4],[1,4,8],[3,4,6],[],[1],[1],[1,4,11],[1,8,9],[4,8,11],[4,11],[4,8,11],[4],[3,6,11],[3,6],[3,4,6],[3,4,6],[1,4,6],[1,4,8],[3,6,11],[1,3,11],[1,4,9],[1,9,11],[4,8,11],[1,4,11],[1,4,8],[1,6,8],[4,6,8],[1,8,11],[6,8,11],[3,8,11],[3,8,11],[1,11],[1,4,8],[1,6,8],[3,6,11],[1,8,11],[1,4],[1,8,11],[1,4,11],[1,11],[1,4,8],[1,6,8],[4,6,11],[4,6,11],[3,6,11],[3,6,11],[3,6],[3,4,6],[1,4,8],[1,4,8],[3,6],[6],[1,3,4],[1,3,4],[1,3,4],[6,8,11],[1,4,11],[3,4,11],[1,3,11],[6,8,11],[3,4,6],[6],[3,4,6],[6,8],[1,6,8],[1,4,8],[4,6],[4,6,11],[1,4,11],[1,4,11],[1,4,11],[4,6,8],[1,8,11],[4,11],[4,11],[6,8,11],[6],[3,6],[3,6,8],[4,6,8],[1,6,8],[1,4,8],[4,6],[4,6,11],[1,6,11],[1,4,11],[3,6,11],[6,8,11],[4,8,11],[4,11],[4,11],[4,6,11],[6,11],[3,6,11],[3,6,8],[6,8,11],[1,6,8],[1,8,11],[3,6,11],[4,6,9],[6,11],[1,11],[1,11],[8,9,11],[],[],[4],[4,11],[6,11],[3,6],[3,6],[6,8],[1,6,8],[1,6,8],[],[],[],[],[],[]],"bass":[-1,-1,-1,-1,9,9,9,9,11,11,11,11,11,11,11,11,11,10,11,11,9,-1,9,9,11,-1,-1,11,11,-1,-1,11,11,11,11,11,9,-1,-1,9,9,-1,-1,10,11,11,-1,11,11,11,11,-1,9,9,9,9,10,11,8,8,11,11,11,11,11,11,11,11,9,9,9,9,1,1,1,1,11,11,11,11,11,-1,11,11,9,9,9,9,1,-1,1,1,11,11,11,11,1,1,11,-1,9,9,9,9,9,10,10,8,11,11,11,11,11,11,11,-1,9,9,9,9,9,11,11,11,11,11,11,11,11,11,11,11,1,1,1,1,4,4,4,4,11,11,11,11,4,4,4,4,1,1,1,1,4,4,4,4,11,11,11,11,11,11,11,11,9,9,9,9,1,1,1,1,11,11,11,11,1,1,11,11,9,9,9,9,1,1,1,1,11,11,11,11,1,1,11,11,9,9,9,9,9,9,11,11,11,11,11,11,11,11,11,11,9,9,9,9,-1,-1,11,10,11,11,11,11,11,11,-1,-1,-1,-1,-1,-1]};
+  const cvs = document.getElementById('dawCvs'), ctx = cvs.getContext('2d'), song = document.getElementById('song'), pos = document.getElementById('dawPos');
+  const BT = A.beats, NB = BT.length;
+  const stepT = i => { const b = Math.floor(i / 4), f = (i % 4) / 4; return b + 1 < NB ? BT[b] + (BT[b + 1] - BT[b]) * f : BT[NB - 1]; };
+  const beatLen = (BT[NB - 1] - BT[0]) / (NB - 1);
+  const ev = {
+    kick: A.kick.map(stepT), snare: A.snare.map(stepT), hat: A.hat.map(stepT),
+    keys: A.keys.map((k, i) => ({ t: BT[i], e: BT[i + 1] || BT[i] + beatLen, n: k })).filter(x => x.n.length),
+    bass: A.bass.map((n, i) => ({ t: BT[i], e: BT[i + 1] || BT[i] + beatLen, n })).filter(x => x.n >= 0)
+  };
+  const firstIn = arr => arr.length ? (typeof arr[0] === 'number' ? arr[0] : arr[0].t) : Infinity;
+  const TRACKS = [
+    { id: 'keys', name: 'Keys', col: '#E2C792' },
+    { id: 'bass', name: 'Bass', col: '#B9C9A8' },
+    { id: 'kick', name: 'Kick', col: '#E9E4D8' },
+    { id: 'snare', name: 'Snare', col: '#D6A77A' },
+    { id: 'hat', name: 'Hats & shaker', col: '#8FA898' }
+  ].map(t => ({ ...t, in: firstIn(ev[t.id]) }));
+  let W, H, dpr, head, lane0, laneH, kbY, kbH, rulerH = 22;
+  function size() {
+    dpr = Math.min(devicePixelRatio || 1, 2); W = cvs.clientWidth; H = cvs.clientHeight;
+    cvs.width = W * dpr; cvs.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    head = W < 560 ? 74 : 132; kbH = Math.max(52, H * .17); kbY = H - kbH; laneH = (kbY - rulerH - 10) / TRACKS.length; lane0 = rulerH;
   }
-  // brushing the strings still moves them, silently
-  function local(e) { const r = svg.getBoundingClientRect(); return e.clientY - r.top; }
-  svg.addEventListener('pointermove', e => { const y = local(e); if (last != null) { const lo = Math.min(last, y), hi = Math.max(last, y); strings.forEach((s, i) => { if (s.y >= lo && s.y <= hi) { amp[i] = Math.max(amp[i], 10); } }); } last = y; });
-  svg.addEventListener('pointerleave', () => { last = null; });
+  const VIEW_BEATS = () => (W < 560 ? 8 : 16);
   function draw() {
-    const lv = window.__songLevels && window.__songLevels();
-    strings.forEach((s, i) => {
-      if (lv) { const v = Math.min(1, Math.max(0, lv[i] * [1, .9, .9, 1.15, 1.9, 6][i] - .16) / .84); base[i] += (v - base[i]) * .35; amp[i] = Math.max(amp[i] * .9, base[i] * 16); }
-      else { base[i] *= .9; amp[i] *= .955; }
-      phase[i] += .9 - i * .07;
-      const off = amp[i] > .05 ? Math.sin(phase[i]) * amp[i] * 2 : 0;
-      const d = off ? `M0 ${s.y} Q${W / 2} ${s.y + off} ${W} ${s.y}` : `M0 ${s.y} L${W} ${s.y}`;
-      s.p.setAttribute('d', d); s.glow.setAttribute('d', d); s.glow.setAttribute('opacity', Math.min(.45, base[i] * .6));
+    const now = song.currentTime || 0, playing = !song.paused;
+    const span = VIEW_BEATS() * beatLen, laneW = W - head, phX = head + laneW * .62;
+    const t0 = now - span * .62, x = tt => head + (tt - t0) / span * laneW;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '11px Manrope, sans-serif'; ctx.textBaseline = 'middle';
+    // ruler: bars and beats
+    for (let i = 0; i < NB; i++) {
+      const bx = x(BT[i]); if (bx < head - 1 || bx > W) continue;
+      const bar = i % 4 === 0;
+      ctx.fillStyle = bar ? 'rgba(216,213,206,.16)' : 'rgba(216,213,206,.06)'; ctx.fillRect(bx, lane0, 1, kbY - 10 - lane0);
+      if (bar) { ctx.fillStyle = '#7F8A82'; ctx.fillText(String(i / 4 + 1), bx + 4, rulerH / 2); }
+    }
+    // lanes
+    TRACKS.forEach((tr, r) => {
+      const y = lane0 + r * laneH, live = now >= tr.in - .05;
+      ctx.fillStyle = r % 2 ? 'rgba(216,213,206,.025)' : 'rgba(216,213,206,.045)'; ctx.fillRect(head, y + 2, laneW, laneH - 4);
+      // track header
+      ctx.fillStyle = live ? tr.col : 'rgba(216,213,206,.18)'; ctx.beginPath(); ctx.arc(12, y + laneH / 2, 4, 0, 7); ctx.fill();
+      ctx.fillStyle = live ? '#D8D5CE' : 'rgba(216,213,206,.35)'; ctx.font = (W < 560 ? 11.5 : 13) + 'px Manrope, sans-serif';
+      ctx.fillText(W < 560 && tr.id === 'hat' ? 'Hats' : tr.name, 24, y + laneH / 2 - (W < 560 ? 0 : 6));
+      if (W >= 560) { ctx.font = '10.5px Manrope, sans-serif'; ctx.fillStyle = '#7F8A82'; const m = Math.floor(tr.in / 60), sec = String(Math.floor(tr.in % 60)).padStart(2, '0'); ctx.fillText(live ? `in at ${m}:${sec}` : 'waiting', 24, y + laneH / 2 + 9); }
+      const pad = 6, yy = y + pad, hh = laneH - pad * 2;
+      const vis = tt => tt <= now && x(tt) > head - 40;
+      if (tr.id === 'keys' || tr.id === 'bass') {
+        ev[tr.id].forEach(e => {
+          if (!vis(e.t)) return; const x1 = Math.max(head, x(e.t)), x2 = Math.min(x(Math.min(e.e, now)), phX); if (x2 <= x1) return;
+          const notes = tr.id === 'keys' ? e.n : [e.n], fresh = now - e.t < .18;
+          notes.forEach(n => { const ny = yy + hh - ((n + .5) / 12) * hh; ctx.fillStyle = tr.col; ctx.globalAlpha = fresh ? 1 : .8; ctx.fillRect(x1 + 1, ny - hh / 24 - 1, x2 - x1 - 2, Math.max(3, hh / 12)); });
+          ctx.globalAlpha = 1;
+        });
+      } else {
+        const w = Math.max(3, laneW / (VIEW_BEATS() * 4) * .55);
+        ev[tr.id].forEach(tt => {
+          if (!vis(tt)) return; const hx = x(tt); if (hx < head) return;
+          const age = now - tt, fresh = age < .2, hgt = tr.id === 'hat' ? hh * .45 : tr.id === 'snare' ? hh * .7 : hh * .9;
+          ctx.fillStyle = tr.col; ctx.globalAlpha = fresh ? 1 : .78;
+          ctx.fillRect(hx, yy + (hh - hgt) / 2, w, hgt);
+          if (fresh) { ctx.globalAlpha = (.2 - age) * 2.5; ctx.fillRect(hx - 3, yy + (hh - hgt) / 2 - 3, w + 6, hgt + 6); }
+          ctx.globalAlpha = 1;
+        });
+      }
     });
-    requestAnimationFrame(draw);
+    // playhead
+    ctx.fillStyle = '#E9EFE0'; ctx.fillRect(phX, lane0 - 4, 1.5, kbY - 6 - lane0);
+    ctx.beginPath(); ctx.moveTo(phX - 5, lane0 - 6); ctx.lineTo(phX + 6.5, lane0 - 6); ctx.lineTo(phX + .75, lane0 + 1); ctx.fill();
+    // keyboard: two octaves, bass lit in the lower, chord notes in the upper
+    const bi = Math.max(0, Math.min(NB - 2, BT.findIndex((b, i) => now >= b && now < (BT[i + 1] || Infinity))));
+    const inSong = now >= BT[0] && now < BT[NB - 1];
+    const chord = inSong && now > 0 ? (A.keys[bi] || []) : [], bassN = inSong && now > 0 ? A.bass[bi] : -1;
+    const WHITE = [0, 2, 4, 5, 7, 9, 11], BLACK = { 1: 0, 3: 1, 6: 3, 8: 4, 10: 5 };
+    const kx = 0, kw = W, ww = kw / 14;
+    for (let o = 0; o < 2; o++) WHITE.forEach((pc, j) => {
+      const on = o === 0 ? pc === bassN : chord.includes(pc), xx = kx + (o * 7 + j) * ww;
+      ctx.fillStyle = on ? (o === 0 ? '#B9C9A8' : '#E2C792') : '#D8D5CE'; ctx.fillRect(xx + 1, kbY, ww - 2, kbH); });
+    for (let o = 0; o < 2; o++) for (const pc in BLACK) {
+      const on = o === 0 ? +pc === bassN : chord.includes(+pc), xx = kx + (o * 7 + BLACK[pc] + 1) * ww - ww * .32;
+      ctx.fillStyle = on ? (o === 0 ? '#B9C9A8' : '#E2C792') : '#1C2420'; ctx.fillRect(xx, kbY, ww * .64, kbH * .6); }
+    // position readout, bar.beat
+    const beatIdx = Math.max(0, bi); pos.textContent = now > 0 ? `${Math.floor(beatIdx / 4) + 1}.${beatIdx % 4 + 1}` : '1.1';
+    if (playing) requestAnimationFrame(draw);
   }
-  build(); addEventListener('resize', build); draw();
+  cvs.addEventListener('click', e => {
+    const r = cvs.getBoundingClientRect(), laneW = W - head, span = VIEW_BEATS() * beatLen;
+    const tt = (song.currentTime || 0) - span * .62 + (e.clientX - r.left - head) / laneW * span;
+    if (e.clientX - r.left > head && (e.clientY - r.top) < kbY) { song.currentTime = Math.max(0, Math.min(song.duration || 185, tt)); if (song.paused) draw(); }
+  });
+  song.addEventListener('play', () => requestAnimationFrame(draw));
+  song.addEventListener('seeked', draw); song.addEventListener('pause', draw);
+  size(); addEventListener('resize', () => { size(); draw(); });
+  if (document.fonts) document.fonts.ready.then(draw); draw();
 })();
 
 /* ---------- motion: one entrance + one consistent reveal ---------- */
