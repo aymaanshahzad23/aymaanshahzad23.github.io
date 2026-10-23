@@ -169,6 +169,13 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 /* ---------- guitar neck ---------- */
 .neck{margin-top:clamp(56px,9vh,96px);position:relative}
 .neck svg{display:block;width:100%;height:clamp(170px,22vw,250px);touch-action:pan-y;cursor:crosshair}
+.gbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+.chords{display:flex;gap:6px}
+.chords button,.gbtn{font:inherit;font-size:14px;color:var(--stone);background:none;border:1px solid rgba(216,213,206,.3);border-radius:999px;padding:7px 15px;cursor:pointer;transition:background .25s,color .25s,border-color .25s}
+.chords button{font-family:var(--serif);font-size:18px;padding:4px 14px;min-width:52px}
+.chords button.on,.gbtn[aria-pressed="true"]{background:var(--stone);color:var(--ink);border-color:var(--stone)}
+.chords button:hover,.gbtn:hover{border-color:var(--stone)}
+.gctl{display:flex;gap:8px}
 .neck figcaption{display:flex;justify-content:space-between;gap:16px;margin-top:14px;font-size:13px;color:#AEB5AF}
 /* ---------- VII. off the clock ---------- */
 .index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 5vw}
@@ -420,8 +427,17 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
     </div>
   </div>
   <figure class="neck" id="neck">
+    <div class="gbar">
+      <div class="chords" role="group" aria-label="Chord">
+        <button data-c="Em" class="on">Em</button><button data-c="C">C</button><button data-c="G">G</button><button data-c="D">D</button><button data-c="Am">Am</button>
+      </div>
+      <div class="gctl">
+        <button id="gPlay" class="gbtn">Play a progression</button>
+        <button id="gSound" class="gbtn" aria-pressed="false">Sound off</button>
+      </div>
+    </div>
     <svg id="neckSvg" aria-hidden="true"></svg>
-    <figcaption><span id="neckHint">Run your cursor across the strings</span><span>Six strings, tuned to E minor</span></figcaption>
+    <figcaption><span id="neckHint">Pick a chord, then run your cursor across the strings</span><span>Keys 1 to 5 change chord, space strums</span></figcaption>
   </figure>
 </section>
 
@@ -684,87 +700,114 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
 /* ---------- guitar ---------- */
 (() => {
   const svg = document.getElementById('neckSvg'), hint = document.getElementById('neckHint');
+  const soundBtn = document.getElementById('gSound'), playBtn = document.getElementById('gPlay');
   const NS = 'http://www.w3.org/2000/svg';
-  // E minor voicing, low to high: E2 B2 E3 G3 B3 E4
-  const FREQ = [82.41, 123.47, 164.81, 196.0, 246.94, 329.63];
-  let W = 0, H = 0, strings = [], ac = null, bufs = null, last = null;
-  const amp = new Array(6).fill(0), phase = new Array(6).fill(0), lastPluck = new Array(6).fill(0);
+  // standard tuning, low to high
+  const OPEN = [82.41, 110.0, 146.83, 196.0, 246.94, 329.63];
+  // frets per string, low to high; -1 = muted
+  const CHORDS = { Em: [0, 2, 2, 0, 0, 0], C: [-1, 3, 2, 0, 1, 0], G: [3, 2, 0, 0, 0, 3], D: [-1, -1, 0, 2, 3, 2], Am: [-1, 0, 2, 2, 1, 0] };
+  const NAMES = Object.keys(CHORDS);
+  let chord = 'Em', W = 0, H = 0, strings = [], fretX = [], dotsG = null, ac = null, soundOn = false, last = null, looping = null;
+  const cache = new Map(), amp = new Array(6).fill(0), phase = new Array(6).fill(0), lastPluck = new Array(6).fill(0);
+  try { soundOn = localStorage.getItem('gtr-sound') === 'on'; } catch (e) {}
 
+  function el(tag, a, parent = svg) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; }
   function build() {
-    W = svg.clientWidth; H = svg.clientHeight;
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    svg.innerHTML = '';
-    const g = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
-    // fretboard
-    g('rect', { x: 0, y: H * .08, width: W, height: H * .84, fill: '#2A231C', rx: 3 });
-    // nut + frets (distances follow the real 12th-root-of-2 spacing)
-    const scale = W * 1.9;
-    let x = W * .04;
-    g('rect', { x: x - 6, y: H * .08, width: 7, height: H * .84, fill: '#D8D5CE', opacity: .85 });
-    const fretX = [x];
-    for (let f = 1; f <= 14; f++) { const fx = W * .04 + scale * (1 - Math.pow(2, -f / 12)); if (fx > W) break; fretX.push(fx); g('rect', { x: fx - 1.2, y: H * .08, width: 2.4, height: H * .84, fill: '#8E8A80', opacity: .7 }); }
-    // inlays at 3, 5, 7, 9 and double at 12
+    W = svg.clientWidth; H = svg.clientHeight; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.innerHTML = '';
+    el('rect', { x: 0, y: H * .08, width: W, height: H * .84, fill: '#2A231C', rx: 3 });
+    const x0 = W * .04, scale = W * 1.9; fretX = [x0];
+    el('rect', { x: x0 - 6, y: H * .08, width: 7, height: H * .84, fill: '#D8D5CE', opacity: .85 });
+    for (let f = 1; f <= 14; f++) { const fx = x0 + scale * (1 - Math.pow(2, -f / 12)); if (fx > W) break; fretX.push(fx); el('rect', { x: fx - 1.2, y: H * .08, width: 2.4, height: H * .84, fill: '#8E8A80', opacity: .7 }); }
     [3, 5, 7, 9, 12].forEach(f => {
       if (!fretX[f]) return; const cx = (fretX[f] + fretX[f - 1]) / 2;
-      if (f === 12) { g('circle', { cx, cy: H * .32, r: 5, fill: '#D8D5CE', opacity: .55 }); g('circle', { cx, cy: H * .68, r: 5, fill: '#D8D5CE', opacity: .55 }); }
-      else g('circle', { cx, cy: H / 2, r: 5, fill: '#D8D5CE', opacity: .55 });
+      if (f === 12) { el('circle', { cx, cy: H * .32, r: 5, fill: '#D8D5CE', opacity: .4 }); el('circle', { cx, cy: H * .68, r: 5, fill: '#D8D5CE', opacity: .4 }); }
+      else el('circle', { cx, cy: H / 2, r: 5, fill: '#D8D5CE', opacity: .4 });
     });
-    // strings: low E at the bottom, like looking down at your own guitar
-    strings = FREQ.map((f, i) => {
+    strings = OPEN.map((f, i) => {
       const y = H * .16 + (5 - i) * (H * .68 / 5);
-      const p = g('path', { d: `M0 ${y} L${W} ${y}`, fill: 'none', stroke: i < 3 ? '#C9B98F' : '#E4E1DA', 'stroke-width': 3.2 - i * .4, 'stroke-linecap': 'round' });
-      return { y, p };
+      return { y, p: el('path', { d: `M0 ${y} L${W} ${y}`, fill: 'none', stroke: i < 3 ? '#C9B98F' : '#E4E1DA', 'stroke-width': 3.2 - i * .4, 'stroke-linecap': 'round' }) };
     });
+    dotsG = el('g', {}); drawChord();
+  }
+  // finger dots for the current chord, muted strings marked at the nut
+  function drawChord() {
+    if (!dotsG) return; dotsG.innerHTML = '';
+    CHORDS[chord].forEach((f, i) => {
+      const y = strings[i].y;
+      if (f < 0) { const t = el('text', { x: fretX[0] - 22, y: y + 5, fill: '#AEB5AF', 'font-size': 15, 'font-family': 'Manrope, sans-serif', 'text-anchor': 'middle' }, dotsG); t.textContent = '×'; strings[i].p.setAttribute('opacity', .35); return; }
+      strings[i].p.setAttribute('opacity', 1);
+      if (f > 0) { const cx = (fretX[f] + fretX[f - 1]) / 2; el('circle', { cx, cy: y, r: Math.min(11, H * .055), fill: '#E2C792' }, dotsG); }
+    });
+  }
+  function setChord(c) {
+    chord = c; drawChord();
+    document.querySelectorAll('.chords button').forEach(b => b.classList.toggle('on', b.dataset.c === c));
   }
 
-  // Karplus-Strong plucked string, rendered once per string
-  function makeBuffers() {
-    const sr = ac.sampleRate;
-    bufs = FREQ.map(f => {
-      const len = Math.floor(sr * 2.6), N = Math.round(sr / f), out = new Float32Array(len), ring = new Float32Array(N);
-      for (let i = 0; i < N; i++) ring[i] = Math.random() * 2 - 1;
-      let idx = 0;
-      for (let i = 0; i < len; i++) { const a = ring[idx], b = ring[(idx + 1) % N], v = .4985 * (a + b); out[i] = a; ring[idx] = v; idx = (idx + 1) % N; }
-      const b = ac.createBuffer(1, len, sr); b.copyToChannel(out, 0); return b;
-    });
+  // Karplus-Strong plucked string, cached per pitch
+  function buffer(f) {
+    const key = Math.round(f * 100); if (cache.has(key)) return cache.get(key);
+    const sr = ac.sampleRate, len = Math.floor(sr * 2.8), N = Math.round(sr / f), out = new Float32Array(len), ring = new Float32Array(N);
+    for (let i = 0; i < N; i++) ring[i] = Math.random() * 2 - 1;
+    let idx = 0; for (let i = 0; i < len; i++) { const a = ring[idx], b = ring[(idx + 1) % N]; out[i] = a; ring[idx] = .4986 * (a + b); idx = (idx + 1) % N; }
+    const bf = ac.createBuffer(1, len, sr); bf.copyToChannel(out, 0); cache.set(key, bf); return bf;
   }
-  function unlock() {
-    if (ac) return;
-    try { ac = new (window.AudioContext || window.webkitAudioContext)(); makeBuffers(); hint.textContent = 'Sound on. Strum away'; } catch (e) {}
+  function setSound(on) {
+    soundOn = on;
+    if (on && !ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { soundOn = false; } }
+    if (ac && on && ac.state === 'suspended') ac.resume();
+    soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', soundOn);
+    try { localStorage.setItem('gtr-sound', soundOn ? 'on' : 'off'); } catch (e) {}
+    if (!soundOn && looping) stopLoop();
   }
   function pluck(i, strength) {
-    const now = performance.now(); if (now - lastPluck[i] < 70) return; lastPluck[i] = now;
+    const fret = CHORDS[chord][i]; if (fret < 0) return;
+    const now = performance.now(); if (now - lastPluck[i] < 60) return; lastPluck[i] = now;
     amp[i] = Math.min(14, 6 + strength * 10); phase[i] = 0;
-    if (ac && bufs) {
-      const s = ac.createBufferSource(), gn = ac.createGain(), pan = ac.createStereoPanner ? ac.createStereoPanner() : null;
-      s.buffer = bufs[i]; gn.gain.value = .35 + strength * .25;
-      let n = s.connect(gn); if (pan) { pan.pan.value = (i - 2.5) / 6; n = gn.connect(pan); }
-      n.connect(ac.destination); s.start();
+    if (soundOn && ac) {
+      const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = buffer(OPEN[i] * Math.pow(2, fret / 12)); g.gain.value = .3 + strength * .25;
+      let n = s.connect(g); if (ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = (i - 2.5) / 6; n = g.connect(p); } n.connect(ac.destination); s.start();
     }
   }
-  function strum(down) { const order = down ? [0,1,2,3,4,5] : [5,4,3,2,1,0]; order.forEach((s, k) => setTimeout(() => pluck(s, .5), k * 28)); }
+  function strum(down, gap = 22) { (down ? [0, 1, 2, 3, 4, 5] : [5, 4, 3, 2, 1, 0]).forEach((s, k) => setTimeout(() => pluck(s, down ? .6 : .4), k * gap)); }
 
-  function crossed(y0, y1, speed) { const lo = Math.min(y0, y1), hi = Math.max(y0, y1); strings.forEach((s, i) => { if (s.y >= lo && s.y <= hi) pluck(i, Math.min(1, speed)); }); }
-  function local(e) { const r = svg.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }; }
-  svg.addEventListener('pointerdown', e => { unlock(); if (ac && ac.state === 'suspended') ac.resume(); const p = local(e); strings.forEach((s, i) => { if (Math.abs(s.y - p.y) < 10) pluck(i, .7); }); last = p; });
-  svg.addEventListener('pointermove', e => { const p = local(e); if (last) { const dt = Math.max(1, p.t - last.t); crossed(last.y, p.y, Math.abs(p.y - last.y) / dt); } last = p; });
+  // a simple loop: Em, C, G, D with a down, down-up, up-down-up pattern
+  const PATTERN = [[0, true], [2, true], [3, false], [5, false], [6, true], [7, false]];
+  function startLoop() {
+    if (!soundOn) setSound(true);
+    const prog = ['Em', 'C', 'G', 'D'], beat = 60 / 92 * 1000 / 2; let bar = 0;
+    const playBar = () => { setChord(prog[bar % 4]); PATTERN.forEach(([eighth, down]) => setTimeout(() => looping && strum(down, 16), eighth * beat)); bar++; };
+    looping = setInterval(playBar, beat * 8); playBar();
+    playBtn.textContent = 'Stop'; playBtn.setAttribute('aria-pressed', 'true');
+  }
+  function stopLoop() { clearInterval(looping); looping = null; playBtn.textContent = 'Play a progression'; playBtn.setAttribute('aria-pressed', 'false'); }
+
+  document.querySelectorAll('.chords button').forEach(b => b.addEventListener('click', () => { setChord(b.dataset.c); if (!looping) strum(true); }));
+  soundBtn.addEventListener('click', () => setSound(!soundOn));
+  playBtn.addEventListener('click', () => looping ? stopLoop() : startLoop());
+  function local(e) { const r = svg.getBoundingClientRect(); return { y: e.clientY - r.top, t: performance.now() }; }
+  svg.addEventListener('pointerdown', e => { if (soundOn && ac && ac.state === 'suspended') ac.resume(); const p = local(e); strings.forEach((s, i) => { if (Math.abs(s.y - p.y) < 12) pluck(i, .7); }); last = p; });
+  svg.addEventListener('pointermove', e => { const p = local(e); if (last) { const lo = Math.min(last.y, p.y), hi = Math.max(last.y, p.y), sp = Math.min(1, Math.abs(p.y - last.y) / Math.max(1, p.t - last.t)); strings.forEach((s, i) => { if (s.y >= lo && s.y <= hi) pluck(i, sp); }); } last = p; });
   svg.addEventListener('pointerleave', () => { last = null; });
-
-  // one silent visual strum as it scrolls into view
+  // keys work while the guitar is on screen
+  let onScreen = false;
+  new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }, { threshold: .3 }).observe(svg);
+  addEventListener('keydown', e => {
+    if (!onScreen || e.target.closest('input,textarea,button,a')) return;
+    const n = +e.key; if (n >= 1 && n <= NAMES.length) { setChord(NAMES[n - 1]); strum(true); }
+    if (e.code === 'Space') { e.preventDefault(); strum(true); }
+  });
   new IntersectionObserver(([en], ob) => { if (en.isIntersecting) { strum(true); ob.disconnect(); } }, { threshold: .6 }).observe(svg);
-
   function draw() {
-    const t = performance.now();
     strings.forEach((s, i) => {
-      if (amp[i] > .05) {
-        phase[i] += .9 - i * .06; amp[i] *= .955;
-        const off = Math.sin(phase[i]) * amp[i];
-        s.p.setAttribute('d', `M0 ${s.y} Q${W / 2} ${s.y + off * 2} ${W} ${s.y}`);
-      } else if (amp[i] !== 0) { amp[i] = 0; s.p.setAttribute('d', `M0 ${s.y} L${W} ${s.y}`); }
+      if (amp[i] > .05) { phase[i] += .9 - i * .06; amp[i] *= .955; s.p.setAttribute('d', `M0 ${s.y} Q${W / 2} ${s.y + Math.sin(phase[i]) * amp[i] * 2} ${W} ${s.y}`); }
+      else if (amp[i] !== 0) { amp[i] = 0; s.p.setAttribute('d', `M0 ${s.y} L${W} ${s.y}`); }
     });
     requestAnimationFrame(draw);
   }
-  build(); addEventListener('resize', build); draw();
+  build(); addEventListener('resize', build); setSound(false); draw();
+  // a stored "on" preference still needs a tap before browsers allow audio
+  if ((() => { try { return localStorage.getItem('gtr-sound') === 'on'; } catch (e) { return false; } })()) { soundBtn.textContent = 'Sound off, tap to turn on'; }
 })();
 
 /* ---------- motion: one entrance + one consistent reveal ---------- */
