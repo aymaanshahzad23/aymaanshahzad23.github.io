@@ -239,22 +239,38 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
   *{animation:none!important;transition:none!important}
 }
 /* ---------- night edition (opt-in via the toggle) ---------- */
-:root[data-theme="dark"]{--ink:#E4E1DA;--soft:#A3ABA5;--rule:rgba(228,225,218,.16);--stone-2:#1D2521}
-:root[data-theme="dark"],:root[data-theme="dark"] body{background:#121815;color:#E4E1DA}
-:root[data-theme="dark"] .nav.solid{background:rgba(18,24,21,.86)}
-:root[data-theme="dark"] ::selection{background:#C9A24A;color:#121815}
-:root[data-theme="dark"] .sound{background:#0B100D}
-:root[data-theme="dark"] .play:hover{color:#1C2420}
-:root[data-theme="dark"] .drop::first-letter{color:#E4E1DA}
-:root[data-theme="dark"] .piece .art svg [fill="#2F3B34"]{fill:#CFCBC2}
-:root[data-theme="dark"] .piece .art svg [stroke="#2F3B34"]{stroke:#CFCBC2}
-:root[data-theme="dark"] .piece .art svg [fill="#5B635D"]{fill:#9AA39C}
-:root[data-theme="dark"] .p4 .art{background:#26302B}
-:root[data-theme="dark"] .p1 .art,:root[data-theme="dark"] .p3 .art{background:#24302A!important}
-:root[data-theme="dark"] .plate,:root[data-theme="dark"] .travel{background:#22302A}
-:root[data-theme="dark"] .interlude{background:#1A2520}
-:root[data-theme="dark"] .ribbon b{color:#D9B866}
-:root[data-theme="dark"] .book{box-shadow:inset -3px 0 0 rgba(0,0,0,.25),inset 2px 0 0 rgba(255,255,255,.06)}
+:root[data-theme="dark"]{--ink:#E8E4DC;--soft:#A7AAA4;--rule:rgba(232,228,220,.13);--stone-2:#1C201E;--gold:#D9B866}
+:root[data-theme="dark"],:root[data-theme="dark"] body{background:#0E100F;color:#E8E4DC}
+:root[data-theme="dark"] .nav.solid{background:rgba(14,16,15,.86)}
+:root[data-theme="dark"] ::selection{background:#D9B866;color:#0E100F}
+/* banding: alternate chapters on two close charcoals */
+:root[data-theme="dark"] .contents,:root[data-theme="dark"] #work,:root[data-theme="dark"] #made,:root[data-theme="dark"] #honours{background:#141716}
+/* green islands, richer than the page */
+:root[data-theme="dark"] .plate{background:#2C3D33}
+:root[data-theme="dark"] .travel{background:#24342B}
+:root[data-theme="dark"] .interlude{background:#1C2A22}
+:root[data-theme="dark"] .p1 .art,:root[data-theme="dark"] .p3 .art{background:#24342B!important}
+/* warm studio for the Sound section */
+:root[data-theme="dark"] .sound{background:#1A1512}
+:root[data-theme="dark"] .daw{background:#120E0C;border-color:rgba(232,228,220,.1)}
+:root[data-theme="dark"] .play:hover{color:#1A1512}
+/* gold accents */
+:root[data-theme="dark"] .chapter-head .no,:root[data-theme="dark"] .contents li span,:root[data-theme="dark"] .honours .y,:root[data-theme="dark"] .work .yr{color:var(--gold)}
+:root[data-theme="dark"] .drop::first-letter{color:var(--gold)}
+:root[data-theme="dark"] .work li.now .yr::before{background:var(--gold)}
+:root[data-theme="dark"] .piece .go,:root[data-theme="dark"] .contact .elsewhere a{border-color:rgba(217,184,102,.6)}
+:root[data-theme="dark"] .contact .mail{background-image:linear-gradient(var(--gold),var(--gold))}
+:root[data-theme="dark"] .contact .mail:hover{color:var(--gold)}
+:root[data-theme="dark"] .work li:hover h3{color:var(--gold)}
+:root[data-theme="dark"] .work{border-top-color:rgba(232,228,220,.5)}
+:root[data-theme="dark"] .pull{color:#F1EDE5}
+/* illustrations */
+:root[data-theme="dark"] .piece .art svg [fill="#2F3B34"]{fill:#D2CEC5}
+:root[data-theme="dark"] .piece .art svg [stroke="#2F3B34"]{stroke:#D2CEC5}
+:root[data-theme="dark"] .piece .art svg [fill="#5B635D"]{fill:#A7AAA4}
+:root[data-theme="dark"] .p4 .art{background:#1F2421}
+:root[data-theme="dark"] .ribbon b{color:var(--gold)}
+:root[data-theme="dark"] .book{box-shadow:inset -3px 0 0 rgba(0,0,0,.28),inset 2px 0 0 rgba(255,255,255,.07)}
 /* theme toggle */
 .theme-btn{display:grid;place-items:center;width:32px;height:32px;margin-left:clamp(10px,1.6vw,22px);border:1px solid var(--rule);border-radius:50%;background:none;color:inherit;cursor:pointer;transition:border-color .3s,transform .5s cubic-bezier(.2,.7,.2,1)}
 .theme-btn:hover{border-color:currentColor;transform:rotate(20deg)}
@@ -849,7 +865,7 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
 /* ---------- theme toggle: light by default, remembered per visitor ---------- */
 (() => {
   const btn = document.getElementById('themeBtn'), root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
-  const sync = () => { const d = root.getAttribute('data-theme') === 'dark'; btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode'); if (meta) meta.setAttribute('content', d ? '#121815' : '#D8D5CE'); };
+  const sync = () => { const d = root.getAttribute('data-theme') === 'dark'; btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode'); if (meta) meta.setAttribute('content', d ? '#0E100F' : '#D8D5CE'); };
   btn.addEventListener('click', () => {
     root.classList.add('theme-anim');
     const d = root.getAttribute('data-theme') === 'dark';
