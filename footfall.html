@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Footfall · Aymaan Shahzad</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
+<style>
+:root{--stone:#D8D5CE;--stone-2:#CBC7BE;--ink:#1C2420;--soft:#5B635D;--moss:#2F3B34;--rule:rgba(28,36,32,.18);--serif:"Cormorant Garamond",Georgia,serif;--sans:"Manrope",system-ui,sans-serif;--line:#2F3B34;--line2:#9AA59C}
+:root[data-theme="dark"]{--stone:#111412;--stone-2:#1E2421;--ink:#E6E2DA;--soft:#9EA39E;--rule:rgba(230,226,218,.12);--line:#D8D5CE;--line2:#5F6B63}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--stone);color:var(--ink)}
+body{font-family:var(--sans);font-weight:300;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;padding:clamp(20px,4vw,56px) clamp(16px,5vw,80px) 60px;max-width:1280px;margin:0 auto}
+a{color:inherit}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--rule)}
+h1{font-family:var(--serif);font-weight:300;font-size:clamp(44px,6vw,80px);line-height:.95;letter-spacing:-.015em}
+h1 i{font-style:italic}
+.ctl{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--soft)}
+.ctl button{font:inherit;font-size:13px;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:999px;padding:5px 13px;cursor:pointer}
+.ctl button.on{background:var(--ink);color:var(--stone);border-color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:26px 20px 24px 0}
+.kpi+.kpi{padding-left:20px;border-left:1px solid var(--rule)}
+.kpi dt{font-size:13px;color:var(--soft)}
+.kpi dd{font-family:var(--serif);font-size:clamp(40px,5vw,68px);line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi small{display:block;font-size:12.5px;color:var(--soft);margin-top:6px}
+section{padding:30px 0;border-bottom:1px solid var(--rule)}
+h2{font-family:var(--serif);font-weight:300;font-style:italic;font-size:28px;margin-bottom:16px}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--soft);margin:-8px 0 12px}
+.legend i{display:inline-block;width:14px;height:2px;vertical-align:4px;margin-right:6px;background:var(--line)}
+.legend i.u{background:var(--line2);height:8px;vertical-align:1px}
+#chart{width:100%;height:260px;display:block}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 40px}
+.list{list-style:none}
+.list li{display:grid;grid-template-columns:1fr auto;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule);position:relative}
+.list li .bar{position:absolute;left:0;bottom:-1px;height:1px;background:var(--ink)}
+.list li span:last-child{font-variant-numeric:tabular-nums;color:var(--soft)}
+.empty{color:var(--soft);font-size:14px;padding:10px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 12px 9px 0;border-bottom:1px solid var(--rule)}
+th{font-weight:500;font-size:12.5px;color:var(--soft)}
+td{font-variant-numeric:tabular-nums}
+.gate{max-width:420px;margin:12vh auto 0}
+.gate p{color:var(--soft);margin:14px 0 22px}
+.gate form{display:flex;gap:8px}
+.gate input{flex:1;font:inherit;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:4px;padding:10px 12px}
+.gate button,.btn{font:inherit;font-weight:500;color:var(--stone);background:var(--ink);border:0;border-radius:4px;padding:10px 16px;cursor:pointer}
+.err{color:#A0533D;font-size:13.5px;margin-top:10px;min-height:1.4em}
+footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:22px;font-size:12.5px;color:var(--soft)}
+footer button{font:inherit;color:inherit;background:none;border:0;text-decoration:underline;cursor:pointer}
+@media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.kpi:nth-child(3){border-left:0;padding-left:0}.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate" hidden>
+  <h1>Foot<i>fall</i></h1>
+  <p>Private visitor stats for aymaanshahzad23.github.io. Enter your dashboard key to continue. It's remembered on this device.</p>
+  <form id="gateForm"><input id="keyIn" type="password" autocomplete="current-password" placeholder="Dashboard key" aria-label="Dashboard key"><button>Open</button></form>
+  <div class="err" id="gateErr" role="alert"></div>
+</div>
+
+<main id="app" hidden>
+  <header>
+    <h1>Foot<i>fall</i></h1>
+    <div class="ctl" role="group" aria-label="Range">Range
+      <button data-d="7">7 days</button><button data-d="30" class="on">30 days</button><button data-d="90">90 days</button>
+    </div>
+  </header>
+  <dl class="kpis">
+    <div class="kpi"><dt>Visits, all time</dt><dd id="kTV">0</dd><small id="kTVs"></small></div>
+    <div class="kpi"><dt>Unique visitors, all time</dt><dd id="kTU">0</dd><small id="kTUs"></small></div>
+    <div class="kpi"><dt>Visits, <span class="rl">30 days</span></dt><dd id="kRV">0</dd><small id="kRVs"></small></div>
+    <div class="kpi"><dt>Unique, <span class="rl">30 days</span></dt><dd id="kRU">0</dd><small id="kRUs"></small></div>
+  </dl>
+  <section>
+    <h2>By day</h2>
+    <div class="legend"><span><i></i>Visits</span><span><i class="u"></i>Unique visitors</span></div>
+    <svg id="chart" role="img" aria-label="Visits and unique visitors by day"></svg>
+  </section>
+  <section class="grid3">
+    <div><h2>Where they came from</h2><ul class="list" id="lRef"></ul></div>
+    <div><h2>Devices</h2><ul class="list" id="lDev"></ul></div>
+    <div><h2>Time zones</h2><ul class="list" id="lTz"></ul></div>
+  </section>
+  <section>
+    <h2>Latest visits</h2>
+    <table><thead><tr><th>When (IST)</th><th>From</th><th>Device</th><th>Time zone</th></tr></thead><tbody id="tRecent"></tbody></table>
+  </section>
+  <footer>
+    <span id="updated"></span>
+    <span><button id="refresh">Refresh</button> · <button id="optout"></button> · <button id="lock">Lock</button></span>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const URL_ = 'https://xpaqugjmtvwxwilfyfnm.supabase.co/rest/v1/rpc/stats', KEY = 'sb_publishable_aIXZqmhfAzXEwRkyMlD4VQ_-6hMfwiC';
+  const $ = id => document.getElementById(id), fmt = n => Number(n || 0).toLocaleString('en-IN');
+  let days = 30, dashKey = null;
+  try { dashKey = localStorage.getItem('ff_dash'); } catch (e) {}
+
+  async function load() {
+    const r = await fetch(URL_, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify({ p_key: dashKey, p_days: days }) });
+    if (!r.ok) throw new Error(r.status === 400 || r.status === 401 || r.status === 403 ? 'key' : 'net');
+    return r.json();
+  }
+  function list(el, rows) {
+    el.innerHTML = '';
+    if (!rows.length) { el.innerHTML = '<li class="empty">No visits in this range yet.</li>'; return; }
+    const max = Math.max(...rows.map(r => r.n));
+    rows.forEach(r => { const li = document.createElement('li'); li.innerHTML = `<span></span><span>${fmt(r.n)}</span><i class="bar" style="width:${r.n / max * 100}%"></i>`; li.firstChild.textContent = r.name; el.appendChild(li); });
+  }
+  function chart(daily) {
+    const svg = $('chart'), W = svg.clientWidth || 800, H = 260, p = { l: 34, r: 8, t: 10, b: 26 };
+    const max = Math.max(4, ...daily.map(d => d.visits)), n = daily.length, cw = (W - p.l - p.r) / n;
+    const y = v => p.t + (H - p.t - p.b) * (1 - v / max), x = i => p.l + cw * i + cw / 2;
+    const css = getComputedStyle(document.documentElement), c1 = css.getPropertyValue('--line').trim(), c2 = css.getPropertyValue('--line2').trim(), rule = css.getPropertyValue('--rule').trim(), soft = css.getPropertyValue('--soft').trim();
+    let s = `<g font-family="Manrope" font-size="10.5" fill="${soft}">`;
+    [0, .5, 1].forEach(f => { const v = Math.round(max * f), yy = y(v); s += `<line x1="${p.l}" x2="${W - p.r}" y1="${yy}" y2="${yy}" stroke="${rule}"/><text x="${p.l - 8}" y="${yy + 3}" text-anchor="end">${v}</text>`; });
+    const step = Math.ceil(n / 8);
+    daily.forEach((d, i) => { if (i % step === 0 || i === n - 1) s += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${new Date(d.day + 'T00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</text>`; });
+    s += '</g>';
+    daily.forEach((d, i) => { const bw = Math.max(2, cw * .5); s += `<rect x="${x(i) - bw / 2}" y="${y(d.uniques)}" width="${bw}" height="${H - p.b - y(d.uniques)}" fill="${c2}"><title>${d.day}: ${d.uniques} unique</title></rect>`; });
+    s += `<polyline fill="none" stroke="${c1}" stroke-width="1.6" points="${daily.map((d, i) => `${x(i)},${y(d.visits)}`).join(' ')}"/>`;
+    daily.forEach((d, i) => { s += `<circle cx="${x(i)}" cy="${y(d.visits)}" r="2.4" fill="${c1}"><title>${d.day}: ${d.visits} visits</title></circle>`; });
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.innerHTML = s;
+  }
+  let last = null;
+  function render(d) {
+    last = d;
+    $('kTV').textContent = fmt(d.total_visits); $('kTU').textContent = fmt(d.total_unique);
+    $('kRV').textContent = fmt(d.range_visits); $('kRU').textContent = fmt(d.range_unique);
+    $('kTVs').textContent = `${fmt(d.today_visits)} today`; $('kTUs').textContent = `${fmt(d.today_unique)} today`;
+    const per = d.range_unique ? (d.range_visits / d.range_unique).toFixed(1) : '0';
+    $('kRVs').textContent = `${per} visits per visitor`; $('kRUs').textContent = `of ${fmt(d.total_unique)} all time`;
+    document.querySelectorAll('.rl').forEach(e => e.textContent = days + ' days');
+    chart(d.daily || []); list($('lRef'), d.referrers || []); list($('lDev'), d.devices || []); list($('lTz'), d.places || []);
+    const tb = $('tRecent'); tb.innerHTML = '';
+    if (!(d.recent || []).length) tb.innerHTML = '<tr><td colspan="4" class="empty">No visits yet. Share your site and check back.</td></tr>';
+    (d.recent || []).forEach(v => { const tr = document.createElement('tr'); [new Date(v.at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), v.referrer, v.device, v.tz || ''].forEach(t => { const td = document.createElement('td'); td.textContent = t; tr.appendChild(td); }); tb.appendChild(tr); });
+    $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  }
+  async function refresh() {
+    try { render(await load()); $('gate').hidden = true; $('app').hidden = false; }
+    catch (e) {
+      if (e.message === 'key') { try { localStorage.removeItem('ff_dash'); } catch (_) {} dashKey = null; showGate('That key didn’t work. Check it and try again.'); }
+      else showGate('Couldn’t reach the stats server. Check your connection and try again.');
+    }
+  }
+  function showGate(msg) { $('app').hidden = true; $('gate').hidden = false; $('gateErr').textContent = msg || ''; $('keyIn').focus(); }
+  $('gateForm').addEventListener('submit', e => { e.preventDefault(); dashKey = $('keyIn').value.trim(); if (!dashKey) return; try { localStorage.setItem('ff_dash', dashKey); } catch (_) {} refresh(); });
+  document.querySelectorAll('.ctl button').forEach(b => b.addEventListener('click', () => { days = +b.dataset.d; document.querySelectorAll('.ctl button').forEach(x => x.classList.toggle('on', x === b)); refresh(); }));
+  $('refresh').addEventListener('click', refresh);
+  $('lock').addEventListener('click', () => { try { localStorage.removeItem('ff_dash'); } catch (_) {} dashKey = null; showGate(''); });
+  // the portfolio and this page share an origin, so this switch excludes this browser from the counts
+  const syncOpt = () => { let o = false; try { o = !!localStorage.getItem('ff_optout'); } catch (_) {} $('optout').textContent = o ? 'This browser isn’t counted (count it)' : 'Stop counting my own visits'; };
+  $('optout').addEventListener('click', () => { try { localStorage.getItem('ff_optout') ? localStorage.removeItem('ff_optout') : localStorage.setItem('ff_optout', '1'); } catch (_) {} syncOpt(); });
+  syncOpt();
+  addEventListener('resize', () => last && chart(last.daily || []));
+  dashKey ? refresh() : showGate('');
+})();
+</script>
+</body>
+</html>

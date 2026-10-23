@@ -859,6 +859,24 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
   sync();
 })();
 
+/* ---------- footfall: anonymous visit counter (Supabase) ---------- */
+(() => {
+  const FF_URL = 'https://xpaqugjmtvwxwilfyfnm.supabase.co/rest/v1/rpc/track', FF_KEY = 'sb_publishable_aIXZqmhfAzXEwRkyMlD4VQ_-6hMfwiC';
+  try {
+    if (!/^https?:$/.test(location.protocol) || /^(localhost|127\.)/.test(location.hostname)) return;
+    const q = new URLSearchParams(location.search);
+    if (q.has('notrack')) localStorage.setItem('ff_optout', '1');
+    if (q.has('track')) localStorage.removeItem('ff_optout');
+    if (localStorage.getItem('ff_optout')) return;
+    let vid = localStorage.getItem('ff_vid'), isNew = false;
+    if (!vid) { vid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); localStorage.setItem('ff_vid', vid); isNew = true; }
+    let ref = ''; try { const r = new URL(document.referrer); if (r.hostname !== location.hostname) ref = r.hostname.replace(/^www\./, ''); } catch (e) {}
+    const w = Math.min(screen.width, innerWidth), device = /iPad|Tablet/i.test(navigator.userAgent) || (w >= 600 && w < 1024 && 'ontouchstart' in window) ? 'tablet' : w < 600 ? 'mobile' : 'desktop';
+    fetch(FF_URL, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', apikey: FF_KEY },
+      body: JSON.stringify({ p_visitor: vid, p_path: location.pathname, p_referrer: ref, p_device: device, p_tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '', p_new: isNew }) }).catch(() => {});
+  } catch (e) {}
+})();
+
 /* ---------- motion: one entrance + one consistent reveal ---------- */
 if (!reduce && window.gsap) {
   gsap.registerPlugin(ScrollTrigger);
