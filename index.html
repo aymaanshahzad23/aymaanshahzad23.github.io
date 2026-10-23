@@ -18,6 +18,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -46,7 +47,7 @@ img,svg,canvas{display:block}
 .nav{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:22px var(--gut);font-size:14px;transition:background .4s,padding .4s}
 .nav.solid{background:rgba(216,213,206,.86);backdrop-filter:blur(10px);padding-top:14px;padding-bottom:14px}
 .nav .mark{font-weight:500}
-.nav ul{display:flex;gap:clamp(18px,2.6vw,36px);list-style:none}
+.nav ul{display:flex;gap:clamp(18px,2.6vw,36px);list-style:none;margin-left:auto}
 .nav ul a{position:relative}
 .nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 .nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
@@ -237,6 +238,30 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
+/* ---------- night edition (opt-in via the toggle) ---------- */
+:root[data-theme="dark"]{--ink:#E4E1DA;--soft:#A3ABA5;--rule:rgba(228,225,218,.16);--stone-2:#1D2521}
+:root[data-theme="dark"],:root[data-theme="dark"] body{background:#121815;color:#E4E1DA}
+:root[data-theme="dark"] .nav.solid{background:rgba(18,24,21,.86)}
+:root[data-theme="dark"] ::selection{background:#C9A24A;color:#121815}
+:root[data-theme="dark"] .sound{background:#0B100D}
+:root[data-theme="dark"] .play:hover{color:#1C2420}
+:root[data-theme="dark"] .drop::first-letter{color:#E4E1DA}
+:root[data-theme="dark"] .piece .art svg [fill="#2F3B34"]{fill:#CFCBC2}
+:root[data-theme="dark"] .piece .art svg [stroke="#2F3B34"]{stroke:#CFCBC2}
+:root[data-theme="dark"] .piece .art svg [fill="#5B635D"]{fill:#9AA39C}
+:root[data-theme="dark"] .p4 .art{background:#26302B}
+:root[data-theme="dark"] .p1 .art,:root[data-theme="dark"] .p3 .art{background:#24302A!important}
+:root[data-theme="dark"] .plate,:root[data-theme="dark"] .travel{background:#22302A}
+:root[data-theme="dark"] .interlude{background:#1A2520}
+:root[data-theme="dark"] .ribbon b{color:#D9B866}
+:root[data-theme="dark"] .book{box-shadow:inset -3px 0 0 rgba(0,0,0,.25),inset 2px 0 0 rgba(255,255,255,.06)}
+/* theme toggle */
+.theme-btn{display:grid;place-items:center;width:32px;height:32px;margin-left:clamp(10px,1.6vw,22px);border:1px solid var(--rule);border-radius:50%;background:none;color:inherit;cursor:pointer;transition:border-color .3s,transform .5s cubic-bezier(.2,.7,.2,1)}
+.theme-btn:hover{border-color:currentColor;transform:rotate(20deg)}
+.theme-btn svg{width:15px;height:15px}
+.theme-btn .moon{display:block}.theme-btn .sun{display:none}
+:root[data-theme="dark"] .theme-btn .moon{display:none}:root[data-theme="dark"] .theme-btn .sun{display:block}
+html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .45s ease,border-color .45s ease!important}
 </style>
 </head>
 <body>
@@ -250,6 +275,7 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
     <li class="opt"><a href="#sound">Sound</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
+  <button class="theme-btn" id="themeBtn" aria-label="Switch to dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
 </header>
 
 <main id="top">
@@ -818,6 +844,20 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
   const wrap = document.querySelector('.shelf-wrap');
   if (wrap && hint && wrap.scrollWidth > wrap.clientWidth + 4) hint.textContent += ', swipe for more';
   books.forEach(b => b.addEventListener('click', () => { const was = b.classList.contains('out'); books.forEach(x => x.classList.remove('out')); if (!was) b.classList.add('out'); }));
+})();
+
+/* ---------- theme toggle: light by default, remembered per visitor ---------- */
+(() => {
+  const btn = document.getElementById('themeBtn'), root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  const sync = () => { const d = root.getAttribute('data-theme') === 'dark'; btn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode'); if (meta) meta.setAttribute('content', d ? '#121815' : '#D8D5CE'); };
+  btn.addEventListener('click', () => {
+    root.classList.add('theme-anim');
+    const d = root.getAttribute('data-theme') === 'dark';
+    if (d) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('theme', d ? 'light' : 'dark'); } catch (e) {}
+    sync(); setTimeout(() => root.classList.remove('theme-anim'), 500);
+  });
+  sync();
 })();
 
 /* ---------- motion: one entrance + one consistent reveal ---------- */
