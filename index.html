@@ -181,13 +181,17 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 .index dl{border-top:1px solid var(--ink)}
 .index dt{font-family:var(--serif);font-style:italic;font-size:clamp(26px,2.2vw,34px);padding-top:16px}
 .index dd{padding:4px 0 26px;color:var(--soft);border-bottom:1px solid var(--rule);max-width:46ch}
-.shelf{display:flex;gap:6px;align-items:flex-end;height:120px;margin:12px 0 4px}
-.shelf span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--serif);font-size:14px;color:var(--stone);background:var(--moss);padding:10px 6px;border-radius:1px;line-height:1}
+.shelf{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;min-height:190px;margin:12px 0 4px}
+.shelf span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--serif);font-size:13.5px;height:180px;color:var(--stone);background:var(--moss);padding:10px 6px;border-radius:1px;line-height:1}
 .shelf span:nth-child(2){background:#6D5D4B;height:92%}
 .shelf span:nth-child(3){background:#43524A;height:100%}
 .shelf span:nth-child(4){background:#8A8170;height:84%}
 .shelf span:nth-child(5){background:#2B2F2C;height:96%}
-.shelf span:nth-child(1){height:88%}
+.shelf span:nth-child(1){height:168px}
+.shelf span:nth-child(2){height:172px}.shelf span:nth-child(3){height:180px}.shelf span:nth-child(4){height:160px}.shelf span:nth-child(5){height:176px}
+.shelf span:nth-child(6){background:#5A6B5F;height:186px}
+.shelf span:nth-child(7){background:#7A6A57;height:150px}
+.shelf span:nth-child(8){background:#3C4740;height:158px}
 
 /* ---------- contact ---------- */
 .contact{padding:clamp(110px,20vh,220px) var(--gut) 40px;border-top:1px solid var(--rule)}
@@ -456,7 +460,7 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
     <dl>
       <dt>On the shelf</dt>
       <dd>
-        <div class="shelf" aria-hidden="true"><span>The Mom Test</span><span>The Lean Startup</span><span>Mindset</span><span>How Life Imitates Chess</span><span>Who Will Cry When You Die</span></div>
+        <div class="shelf" aria-hidden="true"><span>The Mom Test</span><span>The Lean Startup</span><span>Mindset</span><span>How Life Imitates Chess</span><span>Who Will Cry When You Die</span><span>The Monk Who Sold His Ferrari</span><span>Digital Detox</span><span>Make Your Bed</span></div>
         Books about building, thinking and living well.
       </dd>
       <dt>On the road</dt><dd>I love travelling more than almost anything. Always planning the next trip, and one day, a life abroad. Learning Spanish on Duolingo to get ready for it.</dd>
