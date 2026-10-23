@@ -750,14 +750,37 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
   // Karplus-Strong plucked string, cached per pitch
   function buffer(f) {
     const key = Math.round(f * 100); if (cache.has(key)) return cache.get(key);
-    const sr = ac.sampleRate, len = Math.floor(sr * 2.8), N = Math.round(sr / f), out = new Float32Array(len), ring = new Float32Array(N);
+    const sr = ac.sampleRate, len = Math.floor(sr * 4.5), N = Math.round(sr / f), out = new Float32Array(len), ring = new Float32Array(N);
+    // soft excitation: noise smoothed several times, like a thumb instead of a pick
     for (let i = 0; i < N; i++) ring[i] = Math.random() * 2 - 1;
-    let idx = 0; for (let i = 0; i < len; i++) { const a = ring[idx], b = ring[(idx + 1) % N]; out[i] = a; ring[idx] = .4986 * (a + b); idx = (idx + 1) % N; }
+    for (let pass = 0; pass < 4; pass++) for (let i = 1; i < N; i++) ring[i] = ring[i] * .45 + ring[i - 1] * .55;
+    let mx = 0; for (let i = 0; i < N; i++) mx = Math.max(mx, Math.abs(ring[i])); for (let i = 0; i < N; i++) ring[i] /= mx || 1;
+    // slower decay and a touch more damping on the highs as the note rings
+    let idx = 0; for (let i = 0; i < len; i++) { const a = ring[idx], b = ring[(idx + 1) % N]; out[i] = a; ring[idx] = .4994 * (a * .52 + b * .48) * 2 * .999; idx = (idx + 1) % N; }
+    const fade = Math.floor(sr * .02); for (let i = 0; i < fade; i++) out[len - fade + i] *= 1 - i / fade;
     const bf = ac.createBuffer(1, len, sr); bf.copyToChannel(out, 0); cache.set(key, bf); return bf;
+  }
+  // warm clean tone: high cut, a little body, soft room reverb, gentle compression
+  let bus = null;
+  function buildChain() {
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2300; lp.Q.value = .4;
+    const body = ac.createBiquadFilter(); body.type = 'peaking'; body.frequency.value = 220; body.Q.value = .8; body.gain.value = 4;
+    const air = ac.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 4000; air.gain.value = -6;
+    const comp = ac.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.attack.value = .01; comp.release.value = .3;
+    const dry = ac.createGain(); dry.gain.value = .8;
+    const wet = ac.createGain(); wet.gain.value = .38;
+    const verb = ac.createConvolver();
+    const rl = Math.floor(ac.sampleRate * 2.6), ir = ac.createBuffer(2, rl, ac.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); let lpv = 0; for (let i = 0; i < rl; i++) { lpv = lpv * .7 + (Math.random() * 2 - 1) * .3; d[i] = lpv * Math.pow(1 - i / rl, 2.4); } }
+    verb.buffer = ir;
+    bus = ac.createGain(); bus.gain.value = .9;
+    bus.connect(body).connect(lp).connect(air);
+    air.connect(dry).connect(comp); air.connect(verb).connect(wet).connect(comp);
+    comp.connect(ac.destination);
   }
   function setSound(on) {
     soundOn = on;
-    if (on && !ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { soundOn = false; } }
+    if (on && !ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); buildChain(); } catch (e) { soundOn = false; } }
     if (ac && on && ac.state === 'suspended') ac.resume();
     soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', soundOn);
     try { localStorage.setItem('gtr-sound', soundOn ? 'on' : 'off'); } catch (e) {}
@@ -768,18 +791,19 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
     const now = performance.now(); if (now - lastPluck[i] < 60) return; lastPluck[i] = now;
     amp[i] = Math.min(14, 6 + strength * 10); phase[i] = 0;
     if (soundOn && ac) {
-      const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = buffer(OPEN[i] * Math.pow(2, fret / 12)); g.gain.value = .3 + strength * .25;
-      let n = s.connect(g); if (ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = (i - 2.5) / 6; n = g.connect(p); } n.connect(ac.destination); s.start();
+      const s = ac.createBufferSource(), g = ac.createGain(); s.buffer = buffer(OPEN[i] * Math.pow(2, fret / 12));
+      const t = ac.currentTime, v = .22 + strength * .18; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012);
+      let n = s.connect(g); if (ac.createStereoPanner) { const p = ac.createStereoPanner(); p.pan.value = (i - 2.5) / 7; n = g.connect(p); } n.connect(bus); s.start(t);
     }
   }
-  function strum(down, gap = 22) { (down ? [0, 1, 2, 3, 4, 5] : [5, 4, 3, 2, 1, 0]).forEach((s, k) => setTimeout(() => pluck(s, down ? .6 : .4), k * gap)); }
+  function strum(down, gap = 34) { (down ? [0, 1, 2, 3, 4, 5] : [5, 4, 3, 2, 1, 0]).forEach((s, k) => setTimeout(() => pluck(s, down ? .6 : .4), k * gap)); }
 
-  // a simple loop: Em, C, G, D with a down, down-up, up-down-up pattern
+  // a slow G to C sway, in the spirit of a soulful clean-guitar ballad
   const PATTERN = [[0, true], [2, true], [3, false], [5, false], [6, true], [7, false]];
   function startLoop() {
     if (!soundOn) setSound(true);
-    const prog = ['Em', 'C', 'G', 'D'], beat = 60 / 92 * 1000 / 2; let bar = 0;
-    const playBar = () => { setChord(prog[bar % 4]); PATTERN.forEach(([eighth, down]) => setTimeout(() => looping && strum(down, 16), eighth * beat)); bar++; };
+    const prog = ['G', 'C', 'G', 'C'], beat = 60 / 64 * 1000 / 2; let bar = 0;
+    const playBar = () => { setChord(prog[bar % 4]); PATTERN.forEach(([eighth, down]) => setTimeout(() => looping && strum(down, down ? 30 : 22), eighth * beat)); bar++; };
     looping = setInterval(playBar, beat * 8); playBar();
     playBtn.textContent = 'Stop'; playBtn.setAttribute('aria-pressed', 'true');
   }
