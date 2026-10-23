@@ -181,7 +181,7 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 .index dl{border-top:1px solid var(--ink)}
 .index dt{font-family:var(--serif);font-style:italic;font-size:clamp(26px,2.2vw,34px);padding-top:16px}
 .index dd{padding:4px 0 26px;color:var(--soft);border-bottom:1px solid var(--rule);max-width:46ch}
-.shelf{position:relative;display:flex;gap:5px;align-items:flex-end;height:264px;overflow:hidden;margin:12px 0 0;padding:0 2px}
+.shelf{position:relative;display:flex;gap:5px;align-items:flex-end;height:264px;overflow:hidden;padding:0 2px;width:max-content;min-width:100%}
 .shelf::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--ink);z-index:2}
 .book{position:relative;flex:none;width:32px;height:calc(var(--h) + 64px);transform:translateY(64px);background:var(--c);border:0;border-radius:2px 2px 0 0;padding:0;cursor:pointer;color:var(--stone);transition:transform .55s cubic-bezier(.2,.7,.2,1),box-shadow .55s;box-shadow:inset -3px 0 0 rgba(0,0,0,.12),inset 2px 0 0 rgba(255,255,255,.06)}
 .book.wide{width:44px}
@@ -191,6 +191,14 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 .book::before{content:"";position:absolute;left:5px;right:5px;bottom:68px;height:1px;background:currentColor;opacity:.25}
 .book:hover,.book:focus-visible,.book.out{transform:translateY(0);box-shadow:inset -3px 0 0 rgba(0,0,0,.12),0 10px 18px -8px rgba(28,36,32,.45)}
 .book:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.shelf-wrap{overflow-x:auto;overflow-y:hidden;margin:12px 0 0;scrollbar-width:none;max-width:100%}
+.index dl,.index dd{min-width:0}
+.shelf-wrap::-webkit-scrollbar{display:none}
+.ribbon{position:relative;flex:none;align-self:flex-end;width:24px;height:226px;margin:0 8px;transform:translateY(-10px)}
+.ribbon::before{content:"";position:absolute;inset:0;background:#C9A24A;clip-path:polygon(0 0,100% 0,100% 100%,50% calc(100% - 12px),0 100%);box-shadow:inset -3px 0 0 rgba(0,0,0,.12)}
+.ribbon b{position:absolute;top:2px;white-space:nowrap;font-family:var(--sans);font-size:11.5px;font-weight:600;color:#8A6E2C}
+.ribbon .l{right:calc(100% + 8px)}
+.ribbon .r{left:calc(100% + 8px)}
 .shelf-hint{font-size:12.5px;color:var(--soft);margin-top:8px}
 
 /* ---------- contact ---------- */
@@ -460,7 +468,7 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
     <dl>
       <dt>On the shelf</dt>
       <dd>
-        <div class="shelf" role="list" aria-label="Books on my shelf"><button class="book" style="--c:#2F3B34;--h:168px" aria-label="The Mom Test by Rob Fitzpatrick"><span class="bt">The Mom Test</span><span class="ba">Rob Fitzpatrick</span></button><button class="book" style="--c:#6D5D4B;--h:172px" aria-label="The Lean Startup by Eric Ries"><span class="bt">The Lean Startup</span><span class="ba">Eric Ries</span></button><button class="book" style="--c:#43524A;--h:180px" aria-label="Mindset by Carol S. Dweck"><span class="bt">Mindset</span><span class="ba">Carol S. Dweck</span></button><button class="book wide" style="--c:#8A8170;--h:176px" aria-label="How Life Imitates Chess by Garry Kasparov"><span class="bt">How Life Imitates Chess</span><span class="ba">Garry Kasparov</span></button><button class="book wide" style="--c:#2B2F2C;--h:184px" aria-label="Who Will Cry When You Die by Robin Sharma"><span class="bt">Who Will Cry When You Die</span><span class="ba">Robin Sharma</span></button><button class="book wide" style="--c:#5A6B5F;--h:190px" aria-label="The Monk Who Sold His Ferrari by Robin Sharma"><span class="bt">The Monk Who Sold His Ferrari</span><span class="ba">Robin Sharma</span></button><button class="book" style="--c:#7A6A57;--h:160px" aria-label="Dopamine Detox by Thibaut Meurisse"><span class="bt">Dopamine Detox</span><span class="ba">Thibaut Meurisse</span></button><button class="book" style="--c:#3C4740;--h:164px" aria-label="Make Your Bed by William H. McRaven"><span class="bt">Make Your Bed</span><span class="ba">William H. McRaven</span></button></div><p class="shelf-hint" id="shelfHint">Hover a book to pull it out</p>
+        <div class="shelf-wrap"><div class="shelf" role="list" aria-label="Books I have read, then books up next"><button class="book" style="--c:#2F3B34;--h:168px" aria-label="The Mom Test by Rob Fitzpatrick, read"><span class="bt">The Mom Test</span><span class="ba">Rob Fitzpatrick</span></button><button class="book wide" style="--c:#2B2F2C;--h:184px" aria-label="Who Will Cry When You Die by Robin Sharma, read"><span class="bt">Who Will Cry When You Die</span><span class="ba">Robin Sharma</span></button><button class="book" style="--c:#3C4740;--h:164px" aria-label="Make Your Bed by William H. McRaven, read"><span class="bt">Make Your Bed</span><span class="ba">William H. McRaven</span></button><button class="book wide" style="--c:#5A6B5F;--h:190px" aria-label="The Monk Who Sold His Ferrari by Robin Sharma, read"><span class="bt">The Monk Who Sold His Ferrari</span><span class="ba">Robin Sharma</span></button><button class="book wide" style="--c:#6D5D4B;--h:178px" aria-label="The Psychology of Money by Morgan Housel, read"><span class="bt">The Psychology of Money</span><span class="ba">Morgan Housel</span></button><span class="ribbon" aria-hidden="true"><b class="l">← Read</b><b class="r">Up next →</b></span><button class="book" style="--c:#7A6A57;--h:172px" aria-label="The Lean Startup by Eric Ries, up next"><span class="bt">The Lean Startup</span><span class="ba">Eric Ries</span></button><button class="book" style="--c:#43524A;--h:158px" aria-label="Mindset by Carol S. Dweck, up next"><span class="bt">Mindset</span><span class="ba">Carol S. Dweck</span></button><button class="book wide" style="--c:#8A8170;--h:176px" aria-label="How Life Imitates Chess by Garry Kasparov, up next"><span class="bt">How Life Imitates Chess</span><span class="ba">Garry Kasparov</span></button><button class="book" style="--c:#4D5A52;--h:160px" aria-label="Dopamine Detox by Thibaut Meurisse, up next"><span class="bt">Dopamine Detox</span><span class="ba">Thibaut Meurisse</span></button><button class="book wide" style="--c:#2B2F2C;--h:192px" aria-label="The Hard Thing About Hard Things by Ben Horowitz, up next"><span class="bt">The Hard Thing About Hard Things</span><span class="ba">Ben Horowitz</span></button><button class="book" style="--c:#5E5244;--h:166px" aria-label="The Money Ball by Sarthak Ahuja, up next"><span class="bt">The Money Ball</span><span class="ba">Sarthak Ahuja</span></button></div></div><p class="shelf-hint"><span id="shelfHint">Hover a book to pull it out</span> · 5 read, 6 up next</p>
         Books about building, thinking and living well.
       </dd>
       <dt>On the road</dt><dd>I love travelling more than almost anything. Always planning the next trip, and one day, a life abroad. Learning Spanish on Duolingo to get ready for it.</dd>
@@ -800,6 +808,8 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
 (() => {
   const books = document.querySelectorAll('.book'), hint = document.getElementById('shelfHint');
   if (matchMedia('(hover: none)').matches && hint) hint.textContent = 'Tap a book to pull it out';
+  const wrap = document.querySelector('.shelf-wrap');
+  if (wrap && hint && wrap.scrollWidth > wrap.clientWidth + 4) hint.textContent += ', swipe for more';
   books.forEach(b => b.addEventListener('click', () => { const was = b.classList.contains('out'); books.forEach(x => x.classList.remove('out')); if (!was) b.classList.add('out'); }));
 })();
 
