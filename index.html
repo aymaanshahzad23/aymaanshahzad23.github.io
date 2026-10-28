@@ -563,13 +563,44 @@ addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { 
 /* smooth scroll */
 let lenis;
 if (!reduce && window.Lenis) {
-  lenis = new Lenis({ lerp: 0.085 });
+  // one consistent glide per wheel movement, instead of a jittery follow
+  lenis = new Lenis({ duration: 1.15, easing: t => 1 - Math.pow(1 - t, 4), wheelMultiplier: .9, touchMultiplier: 1.1 });
   if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update);
   const raf = t => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf);
+
+  /* settle: when the reader pauses near the start of a chapter, ease the last
+     stretch so it lands at the top, only in the direction they were already going */
+  const targets = () => [...document.querySelectorAll('.hero, .contents, section.ch, .interlude, .contact')].map(el => el.getBoundingClientRect().top + scrollY);
+  let idle = null, dir = 1, lastY = scrollY, holding = false, auto = false;
+  addEventListener('pointerdown', () => { holding = true; }, { passive: true });
+  addEventListener('pointerup', () => { holding = false; }, { passive: true });
+  lenis.on('scroll', ({ scroll }) => {
+    if (Math.abs(scroll - lastY) > .5) dir = scroll > lastY ? 1 : -1;
+    lastY = scroll;
+    if (auto) return;
+    clearTimeout(idle);
+    idle = setTimeout(settle, matchMedia('(pointer: coarse)').matches ? 260 : 170);
+  });
+  function settle() {
+    if (holding || auto || lenis.isStopped) return;
+    const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+    if (y <= 2 || y >= max - 2) return;
+    let best = null;
+    for (const t of targets()) {
+      const d = t - y;   // positive: the chapter starts below the top of the screen
+      const ahead = dir > 0 ? d > 0 && d < vh * .34 : d < 0 && -d < vh * .34;
+      const nudge = Math.abs(d) < vh * .06;
+      if ((ahead || nudge) && (best === null || Math.abs(d) < Math.abs(best - y))) best = t;
+    }
+    if (best === null || Math.abs(best - y) < 3) return;
+    auto = true;
+    lenis.scrollTo(Math.min(best, max), { duration: .9 + Math.abs(best - y) / vh * .6, easing: t => 1 - Math.pow(1 - t, 3), onComplete: () => { auto = false; } });
+    setTimeout(() => { auto = false; }, 1800);
+  }
 }
 document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
   const el = document.querySelector(a.getAttribute('href')); if (!el) return;
-  e.preventDefault(); lenis ? lenis.scrollTo(el, { offset: -20, duration: 1.6 }) : el.scrollIntoView();
+  e.preventDefault(); lenis ? lenis.scrollTo(el, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView();
 }));
 
 /* ---------- field lines (shared) ---------- */
