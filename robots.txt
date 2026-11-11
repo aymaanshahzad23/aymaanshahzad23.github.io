@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aymaanshahzad23.github.io/sitemap.xml

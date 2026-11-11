@@ -3,17 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aymaan Shahzad</title>
-<meta name="description" content="Aymaan Shahzad. Energy engineer from IIT Bombay, working on business at Meesho, building toward a company of his own.">
-<meta property="og:title" content="Aymaan Shahzad">
+<title>Aymaan Shahzad · Energy engineer, builder, IIT Bombay</title>
+<meta name="description" content="Aymaan Shahzad is an IIT Bombay energy engineer working on product and business at Meesho in Bengaluru. He builds Earth Stats and Godly, and is working toward an energy startup.">
+<meta name="author" content="Aymaan Shahzad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://aymaanshahzad23.github.io/">
+<meta property="og:site_name" content="Aymaan Shahzad">
+<meta property="og:title" content="Aymaan Shahzad · Energy engineer, builder">
 <meta property="og:description" content="Energy engineer by training. Business at Meesho by day. Building toward a company of my own.">
-<meta property="og:type" content="website">
+<meta property="og:type" content="profile">
+<meta property="profile:first_name" content="Aymaan">
+<meta property="profile:last_name" content="Shahzad">
 <meta property="og:url" content="https://aymaanshahzad23.github.io/">
 <meta property="og:image" content="https://aymaanshahzad23.github.io/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="627">
+<meta property="og:image:alt" content="Aymaan Shahzad, set in large serif type beside a field of lines">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@AymaanShahzad23">
+<meta name="twitter:title" content="Aymaan Shahzad · Energy engineer, builder">
+<meta name="twitter:description" content="Energy engineer by training. Business at Meesho by day. Building toward a company of my own.">
 <meta name="twitter:image" content="https://aymaanshahzad23.github.io/og.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Aymaan Shahzad", "url": "https://aymaanshahzad23.github.io/", "image": "https://aymaanshahzad23.github.io/og.png", "jobTitle": "Senior Associate, Business Management", "worksFor": {"@type": "Organization", "name": "Meesho", "url": "https://www.meesho.com/"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Bombay", "url": "https://www.iitb.ac.in/"}, "homeLocation": {"@type": "Place", "name": "Bengaluru, India"}, "knowsAbout": ["Energy", "Climate technology", "Product strategy", "Data analysis", "Startups", "Music production"], "sameAs": ["https://www.linkedin.com/in/aymaanshahzad23/", "https://github.com/aymaanshahzad23", "https://x.com/AymaanShahzad23", "https://substack.com/@aymaan23", "https://earthstats.in/", "https://godly.org.in/"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Aymaan Shahzad", "url": "https://aymaanshahzad23.github.io/"}</script>
 <meta name="theme-color" content="#D8D5CE">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
@@ -171,6 +183,74 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 
 .chapter-head h2 .aside{font-size:.45em;vertical-align:super;margin-left:.08em;color:var(--soft)}
 .footnote{margin:calc(clamp(40px,7vh,80px) * -1 + 14px) 0 clamp(40px,7vh,72px);font-family:var(--serif);font-style:italic;font-size:clamp(18px,1.5vw,22px);color:var(--soft)}
+/* ---------- guestbook ---------- */
+.gb{margin-top:clamp(70px,12vh,120px);padding-top:26px;border-top:1px solid var(--rule);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px 5vw}
+.gb-head h3{font-family:var(--serif);font-weight:300;font-style:italic;font-size:clamp(30px,2.8vw,42px);line-height:1}
+.gb-head p{margin-top:10px;color:var(--soft);font-size:15px;max-width:30ch}
+.gb-form{display:grid;gap:10px;max-width:560px}
+.gb-form input,.gb-form textarea{font:inherit;font-size:16px;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--rule);padding:10px 2px;resize:vertical;outline:none;transition:border-color .3s}
+.gb-form textarea{font-family:var(--serif);font-size:20px;line-height:1.35}
+.gb-form input:focus,.gb-form textarea:focus{border-bottom-color:var(--ink)}
+.gb-form input::placeholder,.gb-form textarea::placeholder{color:var(--soft);opacity:.8}
+.gb-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:4px}
+.gb-row span{font-size:12.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+.gb-row button{font:inherit;font-size:14px;font-weight:500;color:var(--stone);background:var(--ink);border:0;border-radius:999px;padding:9px 18px;cursor:pointer;transition:opacity .2s}
+:root[data-theme="dark"] .gb-row button{color:#111412}
+.gb-row button[disabled]{opacity:.5;cursor:default}
+.gb-status{font-size:14px;color:var(--soft);min-height:1.4em}
+.gb-list{list-style:none;margin-top:30px;max-width:640px}
+.gb-list li{padding:16px 0;border-top:1px solid var(--rule)}
+.gb-list q{display:block;font-family:var(--serif);font-size:clamp(19px,1.6vw,23px);line-height:1.35;quotes:none;white-space:pre-line}
+.gb-list span{display:block;margin-top:6px;font-size:13px;color:var(--soft)}
+.gb-list .gb-empty{color:var(--soft);font-size:14px;border-top:0;padding-top:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:900px){.gb{grid-template-columns:1fr}}
+/* ---------- command palette ---------- */
+.cmdk{position:fixed;inset:0;z-index:60;background:rgba(18,22,20,.38);backdrop-filter:blur(3px);display:flex;justify-content:center;align-items:flex-start;padding:14vh 16px 16px}
+.cmdk[hidden]{display:none}
+.cmdk-box{width:min(560px,100%);background:var(--stone);color:var(--ink);border:1px solid var(--rule);border-radius:6px;box-shadow:0 24px 60px -20px rgba(0,0,0,.45);overflow:hidden;animation:cmdkIn .22s cubic-bezier(.2,.7,.2,1)}
+:root[data-theme="dark"] .cmdk-box{background:#171B19}
+:root[data-theme="dark"] #cmdkList li.on{color:#111412}
+:root[data-theme="dark"] #cmdkToast{color:#111412!important}
+@keyframes cmdkIn{from{opacity:0;transform:translateY(-8px) scale(.985)}}
+#cmdkIn{width:100%;font:inherit;font-family:var(--serif);font-size:24px;color:var(--ink);background:none;border:0;border-bottom:1px solid var(--rule);padding:16px 18px;outline:none}
+#cmdkIn::placeholder{color:var(--soft)}
+#cmdkList{list-style:none;max-height:min(52vh,420px);overflow:auto;padding:6px}
+#cmdkList li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 12px;border-radius:4px;cursor:pointer;font-size:15px}
+#cmdkList li small{font-size:12px;color:var(--soft);white-space:nowrap}
+#cmdkList li.on{background:var(--ink);color:var(--stone)}
+#cmdkList li.on small{color:inherit;opacity:.7}
+#cmdkList .grp{padding:10px 12px 4px;font-size:12px;color:var(--soft);cursor:default}
+#cmdkList .none{color:var(--soft);cursor:default}
+.cmdk-foot{display:flex;justify-content:space-between;padding:9px 14px;border-top:1px solid var(--rule);font-size:12px;color:var(--soft)}
+@media (hover:none){.kbd-hint{display:none}}
+/* ---------- chess puzzle ---------- */
+.puzzle{display:flex;flex-wrap:wrap;gap:18px 22px;align-items:flex-start;margin:16px 0 6px}
+.pz-board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:min(300px,100%);aspect-ratio:1;border:1px solid var(--rule);user-select:none}
+.pz-sq{position:relative;display:grid;place-items:center;border:0;padding:0;cursor:pointer;font-size:clamp(20px,3.1vw,28px);line-height:1;background:#CBC7BE;color:var(--ink)}
+.pz-sq.d{background:#8E9A8F}
+.pz-sq .pc{font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols",serif;transition:transform .25s}
+.pz-sq .pc.w{color:#F4F1EA;-webkit-text-stroke:1px #1C2420;paint-order:stroke fill}
+.pz-sq .pc.b{color:#1C2420}
+.pz-sq.sel{box-shadow:inset 0 0 0 3px #1C2420}
+.pz-sq.last{box-shadow:inset 0 0 0 100px rgba(201,162,74,.38)}
+.pz-sq.sel.last{box-shadow:inset 0 0 0 3px #1C2420,inset 0 0 0 100px rgba(201,162,74,.38)}
+.pz-sq .co{position:absolute;font-size:8.5px;font-family:var(--sans);opacity:.6;pointer-events:none}
+.pz-sq .co.f{bottom:1px;right:2px}.pz-sq .co.r{top:1px;left:2px}
+.pz-sq:focus-visible{outline:2px solid var(--ink);outline-offset:-2px;z-index:1}
+.pz-board.shake{animation:pzshake .35s}
+@keyframes pzshake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.pz-side{flex:1;min-width:180px}
+.pz-task{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--ink);line-height:1.2}
+.pz-msg{margin-top:8px;font-size:14.5px;color:var(--soft);min-height:3.2em}
+.pz-msg.win{color:var(--ink)}
+.pz-btns{display:flex;gap:8px;margin-top:10px}
+.pz-btns button{font:inherit;font-size:13px;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:999px;padding:5px 14px;cursor:pointer}
+.pz-btns button:hover{border-color:var(--ink)}
+:root[data-theme="dark"] .pz-sq{background:#3A433E}
+:root[data-theme="dark"] .pz-sq.d{background:#252D29}
+:root[data-theme="dark"] .pz-sq .pc.b{color:#0B0E0C;-webkit-text-stroke:1px #9EA39E;paint-order:stroke fill}
+:root[data-theme="dark"] .pz-sq.sel{box-shadow:inset 0 0 0 3px #E6E2DA}
 /* ---------- honours ---------- */
 .honours{list-style:none;border-top:1px solid var(--ink);max-width:1100px}
 .honours li{display:flex;justify-content:space-between;gap:24px;padding:20px 0;border-bottom:1px solid var(--rule)}
@@ -305,7 +385,6 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
   <div class="right">
     <figure class="plate" id="plate">
       <canvas id="plateField" aria-hidden="true"></canvas>
-      <figcaption><span>Field lines, drawn live</span><span>Move through them</span></figcaption>
     </figure>
     <p class="reveal">Energy engineer by training. Business at Meesho by day. Building toward a company of my own.</p>
   </div>
@@ -401,7 +480,6 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
   <canvas id="bigField" aria-hidden="true"></canvas>
   <div>
     <blockquote>Energy is still the thing I'm most curious about.</blockquote>
-    <cite>Move through the field</cite>
   </div>
 </section>
 
@@ -527,7 +605,16 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
   <div class="index">
     <dl>
       <dt>On the pitch</dt><dd>Football and volleyball, and shot put and discus in college.</dd>
-      <dt>At the board</dt><dd>Chess, a lot of it.</dd>
+      <dt>At the board</dt><dd>Chess, a lot of it. Here's one for you.
+        <div class="puzzle" id="puzzle">
+          <div class="pz-board" id="pzBoard" role="grid" aria-label="Chess puzzle board, White to play"></div>
+          <div class="pz-side">
+            <p class="pz-task">White to play and mate in two.</p>
+            <p class="pz-msg" id="pzMsg" aria-live="polite">Click a piece, then the square to move it to.</p>
+            <div class="pz-btns"><button type="button" id="pzHint">Hint</button><button type="button" id="pzReset">Reset</button></div>
+          </div>
+        </div>
+      </dd>
       <dt>On stage</dt><dd>I enjoy public speaking, and will happily argue either side.</dd>
     </dl>
     <dl>
@@ -567,8 +654,25 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
     <a href="https://x.com/AymaanShahzad23" target="_blank" rel="noopener noreferrer">X</a>
     <a href="https://substack.com/@aymaan23" target="_blank" rel="noopener noreferrer">Substack</a>
   </div>
+  <section class="gb" id="guestbook" aria-labelledby="gbTitle">
+    <div class="gb-head">
+      <h3 id="gbTitle">Guestbook</h3>
+      <p>Passing through? Leave a line. Notes show up here once I've read them.</p>
+    </div>
+    <div class="gb-body">
+      <form class="gb-form" id="gbForm" novalidate>
+        <label class="sr" for="gbName">Your name</label>
+        <input id="gbName" name="name" maxlength="40" placeholder="Your name" autocomplete="name" required>
+        <label class="sr" for="gbMsg">Your note</label>
+        <textarea id="gbMsg" name="message" maxlength="280" rows="3" placeholder="Say hello, share a thought, or tell me what you're building" required></textarea>
+        <div class="gb-row"><span id="gbCount">0 / 280</span><button type="submit" id="gbBtn">Sign the guestbook</button></div>
+        <p class="gb-status" id="gbStatus" role="status" aria-live="polite"></p>
+      </form>
+      <ol class="gb-list" id="gbList" aria-label="Notes from visitors"></ol>
+    </div>
+  </section>
   <footer class="colophon">
-    <div>Set in Cormorant Garamond and Manrope.</div>
+    <div>Set in Cormorant Garamond and Manrope. <span class="kbd-hint">Press <span id="kbdKey">Ctrl</span> K to get around.</span></div>
     <div>Made in Bengaluru, 2026.</div>
     <div><a href="#top">Back to the top</a></div>
   </footer>
@@ -576,6 +680,13 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
 
 </main>
 
+<div class="cmdk" id="cmdk" hidden role="dialog" aria-modal="true" aria-label="Quick menu">
+  <div class="cmdk-box">
+    <input id="cmdkIn" type="text" placeholder="Jump to, copy, open…" aria-label="Search actions" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="cmdkList">
+    <ul id="cmdkList" role="listbox"></ul>
+    <p class="cmdk-foot"><span>↑↓ to move · Enter to choose</span><span>Esc to close</span></p>
+  </div>
+</div>
 <div class="hover-plate" id="hp" aria-hidden="true"><b></b><small></small></div>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
@@ -594,7 +705,7 @@ addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { 
 let lenis;
 if (!reduce && window.Lenis) {
   // one consistent glide per wheel movement, instead of a jittery follow
-  lenis = new Lenis({ duration: 1.15, easing: t => 1 - Math.pow(1 - t, 4), wheelMultiplier: .9, touchMultiplier: 1.1 });
+  lenis = window.__lenis = new Lenis({ duration: 1.15, easing: t => 1 - Math.pow(1 - t, 4), wheelMultiplier: .9, touchMultiplier: 1.1 });
   if (window.ScrollTrigger) lenis.on('scroll', ScrollTrigger.update);
   const raf = t => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf);
 
@@ -939,6 +1050,159 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
     fetch(FF_URL, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', apikey: FF_KEY },
       body: JSON.stringify({ p_visitor: vid, p_path: location.pathname, p_referrer: ref, p_device: device, p_tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '', p_new: isNew }) }).catch(() => {});
   } catch (e) {}
+})();
+
+/* ---------- guestbook (footfall database; notes stay hidden until approved) ---------- */
+(() => {
+  const BASE = 'https://xpaqugjmtvwxwilfyfnm.supabase.co/rest/v1/rpc/', KEY = 'sb_publishable_aIXZqmhfAzXEwRkyMlD4VQ_-6hMfwiC';
+  const form = document.getElementById('gbForm'); if (!form) return;
+  const name = document.getElementById('gbName'), msg = document.getElementById('gbMsg'), btn = document.getElementById('gbBtn');
+  const status = document.getElementById('gbStatus'), count = document.getElementById('gbCount'), list = document.getElementById('gbList');
+  const call = (fn, body) => fetch(BASE + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify(body || {}) });
+  const when = iso => new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  async function load() {
+    try {
+      const r = await call('guestbook_list'); if (!r.ok) throw 0;
+      const rows = await r.json(); list.innerHTML = '';
+      if (!rows.length) { list.innerHTML = '<li class="gb-empty">No notes yet. Be the first.</li>'; return; }
+      rows.forEach(n => { const li = document.createElement('li'); li.innerHTML = '<q></q><span></span>'; li.firstChild.textContent = n.message; li.lastChild.textContent = n.name + ', ' + when(n.at); list.appendChild(li); });
+    } catch (e) { list.innerHTML = ''; }
+  }
+  msg.addEventListener('input', () => { count.textContent = msg.value.length + ' / 280'; });
+  const vid = () => { try { let v = localStorage.getItem('ff_vid'); if (!v) { v = crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now(); localStorage.setItem('ff_vid', v); } return v; } catch (e) { return 'anon-' + Date.now(); } };
+  const MESSAGES = {
+    ok: 'Thank you. Your note will appear here once I’ve read it.',
+    bad_name: 'Add your name (up to 40 characters).',
+    bad_message: 'Write a note between 2 and 280 characters.',
+    too_many: 'You’ve left three notes today. Come back tomorrow.',
+    busy: 'Lots of notes right now. Try again in a little while.'
+  };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!name.value.trim()) { status.textContent = MESSAGES.bad_name; name.focus(); return; }
+    if (msg.value.trim().length < 2) { status.textContent = MESSAGES.bad_message; msg.focus(); return; }
+    btn.disabled = true; status.textContent = 'Signing…';
+    try {
+      const r = await call('sign_guestbook', { p_name: name.value, p_message: msg.value, p_visitor: vid() });
+      if (!r.ok) throw 0;
+      const res = await r.json();
+      status.textContent = MESSAGES[res] || 'Something went wrong. Try again.';
+      if (res === 'ok') { msg.value = ''; count.textContent = '0 / 280'; btn.textContent = 'Signed'; return; }
+    } catch (err) { status.textContent = 'Couldn’t reach the guestbook. Check your connection and try again.'; }
+    btn.disabled = false;
+  });
+  new IntersectionObserver(([en], ob) => { if (en.isIntersecting) { load(); ob.disconnect(); } }, { rootMargin: '400px' }).observe(form);
+})();
+
+/* ---------- command palette: Cmd/Ctrl+K ---------- */
+(() => {
+  const box = document.getElementById('cmdk'), input = document.getElementById('cmdkIn'), list = document.getElementById('cmdkList');
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || '');
+  const kk = document.getElementById('kbdKey'); if (kk) kk.textContent = isMac ? '⌘' : 'Ctrl';
+  const go = sel => () => { const el = document.querySelector(sel); if (!el) return; window.__lenis ? window.__lenis.scrollTo(el, { duration: 1.4, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: 'smooth' }); };
+  const open = url => () => window.open(url, '_blank', 'noopener');
+  const MAIL = (document.querySelector('.contact .mail') || {}).textContent || '';
+  let toastT;
+  const toast = t => { let el = document.getElementById('cmdkToast'); if (!el) { el = document.createElement('div'); el.id = 'cmdkToast'; el.setAttribute('role', 'status'); el.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:70;background:var(--ink);color:var(--stone);padding:9px 16px;border-radius:999px;font-size:14px;transition:opacity .3s'; document.body.appendChild(el); } el.textContent = t; el.style.opacity = 1; clearTimeout(toastT); toastT = setTimeout(() => el.style.opacity = 0, 1800); };
+  const ALL = [
+    ['Go to', 'Top', '', '#top'], ['Go to', 'On building', 'I', '#building'], ['Go to', 'Work', 'II', '#work'],
+    ['Go to', 'Field notes', 'III', '#field'], ['Go to', 'Made by hand', 'IV', '#made'], ['Go to', 'Sound', 'V', '#sound'],
+    ['Go to', 'Honours', 'VI', '#honours'], ['Go to', 'Off the clock', 'VII', '#off'], ['Go to', 'Chess puzzle', '', '#puzzle'],
+    ['Go to', 'Guestbook', '', '#guestbook'], ['Go to', 'Contact', '', '#contact']
+  ].filter(i => document.querySelector(i[3])).map(i => [i[0], i[1], i[2], go(i[3])]);
+  const ITEMS = ALL.concat([
+    ['Do', 'Copy my email', MAIL, () => { (navigator.clipboard ? navigator.clipboard.writeText(MAIL) : Promise.reject()).then(() => toast('Email copied'), () => toast(MAIL)); }],
+    ['Do', 'Switch light or dark', '', () => document.getElementById('themeBtn').click()],
+    ['Do', 'Play Growing Apart', 'my track', () => { go('#sound')(); const s = document.getElementById('song'); if (s && s.paused) document.getElementById('play').click(); }],
+    ['Open', 'Earth Stats', 'earthstats.in', open('https://earthstats.in/')], ['Open', 'Godly', 'godly.org.in', open('https://godly.org.in/')],
+    ['Open', 'LinkedIn', '', open('https://www.linkedin.com/in/aymaanshahzad23/')], ['Open', 'GitHub', '', open('https://github.com/aymaanshahzad23')],
+    ['Open', 'X', '', open('https://x.com/AymaanShahzad23')], ['Open', 'Substack', '', open('https://substack.com/@aymaan23')]
+  ]);
+  let shown = [], idx = 0, lastFocus = null;
+  function render() {
+    const q = input.value.trim().toLowerCase();
+    shown = ITEMS.filter(i => !q || (i[0] + ' ' + i[1] + ' ' + i[2]).toLowerCase().includes(q));
+    idx = Math.min(idx, Math.max(0, shown.length - 1));
+    list.innerHTML = ''; let grp = '';
+    if (!shown.length) { list.innerHTML = '<li class="none">Nothing matches. Try “work” or “email”.</li>'; return; }
+    shown.forEach((it, k) => {
+      if (it[0] !== grp && !q) { grp = it[0]; const g = document.createElement('li'); g.className = 'grp'; g.textContent = grp; g.setAttribute('role', 'presentation'); list.appendChild(g); }
+      const li = document.createElement('li'); li.setAttribute('role', 'option'); li.id = 'cmdk-o' + k;
+      li.innerHTML = '<span></span><small></small>'; li.firstChild.textContent = it[1]; li.lastChild.textContent = it[2];
+      li.classList.toggle('on', k === idx); li.setAttribute('aria-selected', k === idx);
+      li.addEventListener('mousemove', () => { if (idx !== k) { idx = k; mark(); } });
+      li.addEventListener('click', () => run(k)); list.appendChild(li);
+    });
+    input.setAttribute('aria-activedescendant', 'cmdk-o' + idx);
+  }
+  function mark() { list.querySelectorAll('[role=option]').forEach((li, k) => { li.classList.toggle('on', k === idx); li.setAttribute('aria-selected', k === idx); }); input.setAttribute('aria-activedescendant', 'cmdk-o' + idx); const on = list.querySelector('.on'); if (on) on.scrollIntoView({ block: 'nearest' }); }
+  function show() { lastFocus = document.activeElement; box.hidden = false; input.value = ''; idx = 0; render(); input.focus(); window.__lenis && window.__lenis.stop(); }
+  function hide() { box.hidden = true; window.__lenis && window.__lenis.start(); lastFocus && lastFocus.focus && lastFocus.focus(); }
+  function run(k) { const it = shown[k]; if (!it) return; hide(); setTimeout(it[3], 60); }
+  addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); box.hidden ? show() : hide(); return; }
+    if (box.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); hide(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); idx = (idx + 1) % shown.length; mark(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); idx = (idx - 1 + shown.length) % shown.length; mark(); }
+    else if (e.key === 'Enter') { e.preventDefault(); run(idx); }
+    else if (e.key === 'Tab') { e.preventDefault(); input.focus(); }
+  });
+  input.addEventListener('input', () => { idx = 0; render(); });
+  box.addEventListener('mousedown', e => { if (e.target === box) hide(); });
+  document.querySelectorAll('.kbd-hint').forEach(h => { h.style.cursor = 'pointer'; h.addEventListener('click', show); });
+})();
+
+/* ---------- chess puzzle: verified mate in two (1.Qg8+ Rxg8 2.Nf7#) ---------- */
+(() => {
+  const board = document.getElementById('pzBoard'); if (!board) return;
+  const msg = document.getElementById('pzMsg');
+  const START = { a8:'bR', f8:'bR', h8:'bK', b7:'bP', c7:'bP', g7:'bP', h7:'bP', a6:'bP', h6:'wN', d5:'wQ', b3:'wP', a2:'wP', f2:'wP', g2:'wP', h2:'wP', c1:'wR', g1:'wK' };
+  const G = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟' };
+  const NAMES = { K:'king', Q:'queen', R:'rook', B:'bishop', N:'knight', P:'pawn' };
+  const SOLUTION = [['d5','g8'], ['h6','f7']];
+  let pos, step, sel, last, done;
+  const files = 'abcdefgh';
+  const sqs = {};
+  for (let r = 8; r >= 1; r--) for (let f = 0; f < 8; f++) {
+    const id = files[f] + r, b = document.createElement('button');
+    b.type = 'button'; b.className = 'pz-sq' + ((f + r) % 2 === 1 ? '' : ' d'); b.dataset.sq = id;
+    b.addEventListener('click', () => click(id));
+    board.appendChild(b); sqs[id] = b;
+  }
+  function draw() {
+    for (const id in sqs) {
+      const b = sqs[id], p = pos[id];
+      b.innerHTML = (p ? `<span class="pc ${p[0]}">${G[p[1]]}</span>` : '') +
+        (id[1] === '1' ? `<span class="co f">${id[0]}</span>` : '') + (id[0] === 'a' ? `<span class="co r">${id[1]}</span>` : '');
+      b.classList.toggle('sel', id === sel);
+      b.classList.toggle('last', !!last && (id === last[0] || id === last[1]));
+      b.setAttribute('aria-label', id + (p ? ', ' + (p[0] === 'w' ? 'white ' : 'black ') + NAMES[p[1]] : ', empty'));
+    }
+  }
+  function move(a, b) { pos[b] = pos[a]; delete pos[a]; last = [a, b]; }
+  function say(t, win) { msg.textContent = t; msg.classList.toggle('win', !!win); }
+  function reset() { pos = { ...START }; step = 0; sel = null; last = null; done = false; say('Click a piece, then the square to move it to.'); draw(); }
+  function click(id) {
+    if (done) return;
+    if (!sel) { if (pos[id] && pos[id][0] === 'w') { sel = id; draw(); } return; }
+    if (id === sel) { sel = null; draw(); return; }
+    if (pos[id] && pos[id][0] === 'w') { sel = id; draw(); return; }
+    const [a, b] = SOLUTION[step];
+    if (sel === a && id === b) {
+      move(a, b); sel = null; draw();
+      if (step === 0) {
+        step = 1; say('Check. Black has only one answer…');
+        setTimeout(() => { move('f8', 'g8'); draw(); say('Rook takes. Now finish it.'); }, 650);
+      } else { done = true; say('Smothered mate. The king is trapped by his own pieces.', true); }
+    } else {
+      sel = null; draw(); board.classList.remove('shake'); void board.offsetWidth; board.classList.add('shake');
+      say(step === 0 ? 'Not quite. Look for a check Black can’t refuse.' : 'Close. Which piece can reach the king through a gap?');
+    }
+  }
+  document.getElementById('pzReset').addEventListener('click', reset);
+  document.getElementById('pzHint').addEventListener('click', () => say(step === 0 ? 'Hint: the queen is worth giving up, and the knight guards g8.' : 'Hint: knights jump over everything. Look at f7.'));
+  reset();
 })();
 
 /* ---------- motion: one entrance + one consistent reveal ---------- */

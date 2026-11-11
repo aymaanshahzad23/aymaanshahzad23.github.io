@@ -51,6 +51,16 @@ td{font-variant-numeric:tabular-nums}
 .gate input{flex:1;font:inherit;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:4px;padding:10px 12px}
 .gate button,.btn{font:inherit;font-weight:500;color:var(--stone);background:var(--ink);border:0;border-radius:4px;padding:10px 16px;cursor:pointer}
 .err{color:#A0533D;font-size:13.5px;margin-top:10px;min-height:1.4em}
+.pend{font-family:var(--sans);font-style:normal;font-size:13px;color:var(--soft);margin-left:8px}
+.gbq{list-style:none}
+.gbq li{display:grid;grid-template-columns:1fr auto;gap:6px 20px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.gbq q{display:block;font-family:var(--serif);font-size:20px;line-height:1.35;quotes:none;white-space:pre-line}
+.gbq .meta{font-size:12.5px;color:var(--soft);margin-top:4px}
+.gbq .tag{display:inline-block;font-size:11.5px;border:1px solid var(--rule);border-radius:999px;padding:1px 8px;margin-left:6px}
+.gbq .acts{display:flex;gap:6px;align-items:flex-start}
+.gbq button{font:inherit;font-size:12.5px;color:var(--ink);background:none;border:1px solid var(--rule);border-radius:999px;padding:4px 11px;cursor:pointer}
+.gbq button.pri{background:var(--ink);color:var(--stone);border-color:var(--ink)}
+.gbq .empty{display:block;color:var(--soft);font-size:14px;border:0}
 footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:22px;font-size:12.5px;color:var(--soft)}
 footer button{font:inherit;color:inherit;background:none;border:0;text-decoration:underline;cursor:pointer}
 @media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.kpi:nth-child(3){border-left:0;padding-left:0}.grid3{grid-template-columns:1fr}}
@@ -86,6 +96,10 @@ footer button{font:inherit;color:inherit;background:none;border:0;text-decoratio
     <div><h2>Where they came from</h2><ul class="list" id="lRef"></ul></div>
     <div><h2>Devices</h2><ul class="list" id="lDev"></ul></div>
     <div><h2>Time zones</h2><ul class="list" id="lTz"></ul></div>
+  </section>
+  <section>
+    <h2>Guestbook <small id="gbPending" class="pend"></small></h2>
+    <ul class="gbq" id="gbQueue"></ul>
   </section>
   <section>
     <h2>Latest visits</h2>
@@ -146,11 +160,34 @@ footer button{font:inherit;color:inherit;background:none;border:0;text-decoratio
     $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   }
   async function refresh() {
-    try { render(await load()); $('gate').hidden = true; $('app').hidden = false; }
+    try { render(await load()); $('gate').hidden = true; $('app').hidden = false; gb('list'); }
     catch (e) {
       if (e.message === 'key') { try { localStorage.removeItem('ff_dash'); } catch (_) {} dashKey = null; showGate('That key didn’t work. Check it and try again.'); }
       else showGate('Couldn’t reach the stats server. Check your connection and try again.');
     }
+  }
+
+  // guestbook moderation: notes wait here until approved
+  const GB = 'https://xpaqugjmtvwxwilfyfnm.supabase.co/rest/v1/rpc/guestbook_admin';
+  async function gb(action, id) {
+    const r = await fetch(GB, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify({ p_key: dashKey, p_action: action || 'list', p_id: id || null }) });
+    if (!r.ok) return;
+    const rows = await r.json(), q = $('gbQueue'); q.innerHTML = '';
+    const pending = rows.filter(x => !x.approved).length;
+    $('gbPending').textContent = pending ? pending + ' waiting for you' : 'all caught up';
+    if (!rows.length) { q.innerHTML = '<li class="empty">No notes yet.</li>'; return; }
+    rows.forEach(n => {
+      const li = document.createElement('li');
+      li.innerHTML = '<div><q></q><div class="meta"></div></div><div class="acts"></div>';
+      li.querySelector('q').textContent = n.message;
+      const meta = li.querySelector('.meta'); meta.textContent = n.name + ' · ' + new Date(n.at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = n.approved ? 'Live' : 'Waiting'; meta.appendChild(tag);
+      const acts = li.querySelector('.acts');
+      const mk = (label, action, pri) => { const b = document.createElement('button'); b.textContent = label; if (pri) b.className = 'pri'; b.addEventListener('click', () => { if (action === 'delete' && !confirm('Delete this note for good?')) return; gb(action, n.id); }); acts.appendChild(b); };
+      n.approved ? mk('Hide', 'hide') : mk('Approve', 'approve', true);
+      mk('Delete', 'delete');
+      q.appendChild(li);
+    });
   }
   function showGate(msg) { $('app').hidden = true; $('gate').hidden = false; $('gateErr').textContent = msg || ''; $('keyIn').focus(); }
   $('gateForm').addEventListener('submit', e => { e.preventDefault(); dashKey = $('keyIn').value.trim(); if (!dashKey) return; try { localStorage.setItem('ff_dash', dashKey); } catch (_) {} refresh(); });
