@@ -723,7 +723,7 @@ if (!reduce && window.Lenis) {
     idle = setTimeout(settle, matchMedia('(pointer: coarse)').matches ? 260 : 170);
   });
   function settle() {
-    if (holding || auto || lenis.isStopped) return;
+    if (holding || auto || lenis.isStopped || (window.__noSettle || 0) > Date.now()) return;
     const y = scrollY, vh = innerHeight, max = document.documentElement.scrollHeight - vh;
     if (y <= 2 || y >= max - 2) return;
     let best = null;
@@ -741,7 +741,7 @@ if (!reduce && window.Lenis) {
 }
 document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
   const el = document.querySelector(a.getAttribute('href')); if (!el) return;
-  e.preventDefault(); lenis ? lenis.scrollTo(el, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView();
+  e.preventDefault(); window.__noSettle = Date.now() + 2600; lenis ? lenis.scrollTo(el, { duration: 1.6, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView();
 }));
 
 /* ---------- field lines (shared) ---------- */
@@ -1099,7 +1099,8 @@ wave.addEventListener('keydown', e => { if (e.key === 'ArrowRight') song.current
   const box = document.getElementById('cmdk'), input = document.getElementById('cmdkIn'), list = document.getElementById('cmdkList');
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform || '');
   const kk = document.getElementById('kbdKey'); if (kk) kk.textContent = isMac ? '⌘' : 'Ctrl';
-  const go = sel => () => { const el = document.querySelector(sel); if (!el) return; window.__lenis ? window.__lenis.scrollTo(el, { duration: 1.4, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: 'smooth' }); };
+  // chapters already carry their own top space; smaller targets get room so the nav never covers them
+  const go = sel => () => { const el = document.querySelector(sel); if (!el) return; const off = el.matches('section.ch, .hero, .contents, .contact, #top') ? 0 : -110; window.__noSettle = Date.now() + 2600; window.__lenis ? window.__lenis.scrollTo(el, { offset: off, duration: 1.4, easing: t => 1 - Math.pow(1 - t, 4) }) : window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + off, behavior: 'smooth' }); };
   const open = url => () => window.open(url, '_blank', 'noopener');
   const MAIL = (document.querySelector('.contact .mail') || {}).textContent || '';
   let toastT;
