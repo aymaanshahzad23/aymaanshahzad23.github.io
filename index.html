@@ -109,6 +109,17 @@ section.ch{padding:clamp(96px,16vh,180px) var(--gut);border-top:1px solid var(--
 .hover-plate b{font-family:var(--serif);font-weight:300;font-size:38px;line-height:1;font-style:italic}
 .hover-plate small{font-size:12px;opacity:.75;margin-top:8px}
 
+/* ---------- on campus ---------- */
+.campus{margin-top:clamp(56px,9vh,96px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 5vw}
+.campus-head{font-family:var(--serif);font-weight:300;font-style:italic;font-size:clamp(30px,2.8vw,42px);line-height:1}
+.campus-sub{font-size:13px;color:var(--soft);margin-top:8px}
+.por{list-style:none;border-top:1px solid var(--rule)}
+.por li{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.5fr) 6rem;gap:8px 3vw;padding:18px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.por h4{font-family:var(--serif);font-weight:400;font-size:clamp(22px,1.8vw,28px);line-height:1.1}
+.por .role{font-size:14.5px}
+.por .role span{display:block;color:var(--soft);margin-top:3px}
+.por .yr{text-align:right;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums}
+@media (max-width:900px){.campus{grid-template-columns:1fr;gap:18px}.por li{grid-template-columns:1fr auto}.por .role{grid-column:1 / -1;grid-row:2}}
 /* ---------- interlude ---------- */
 .interlude{position:relative;min-height:110svh;background:var(--moss);color:var(--stone);display:grid;place-items:center;overflow:hidden;padding:var(--gut)}
 .interlude canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -356,12 +367,28 @@ html.theme-anim,html.theme-anim *{transition:background-color .45s ease,color .4
       <p class="role">CEO's Office, Strategy<span>Cut delivery time by 1.2 days and lifted inventory efficiency 42%. Left with a recommendation letter from the CEO.</span></p>
       <span class="yr">2025</span>
     </li>
-    <li data-label="Placements" data-sub="IIT Bombay">
-      <h3>Placement Office</h3>
-      <p class="role">Institute Internship Coordinator<span>Led my department to a 63% rise in internships, about one in twelve of all campus selections.</span></p>
-      <span class="yr">2024 – 25</span>
-    </li>
   </ul>
+  <div class="campus">
+    <div><h3 class="campus-head">On campus</h3>
+    <p class="campus-sub">Positions of responsibility at IIT Bombay</p></div>
+    <ul class="por">
+      <li>
+        <h4>Placement Office</h4>
+        <p class="role">Institute Internship Coordinator<span>Led my department to a 63% rise in internships, about one in twelve of all campus selections, and ran a team of 12 interview coordinators.</span></p>
+        <span class="yr">2024 – 25</span>
+      </li>
+      <li>
+        <h4>Energy Day</h4>
+        <p class="role">Operations &amp; Strategy Manager<span>Helped grow the department's symposium and tech showcase from one day to two, so it could serve both students and companies. Owned planning, vendors and on-ground execution.</span></p>
+        <span class="yr">2024</span>
+      </li>
+      <li>
+        <h4>Department Council</h4>
+        <p class="role">Associate Secretary<span>Ran events and industry sessions for 500+ students on a tight budget, and led the department's 10-year review report.</span></p>
+        <span class="yr">2023 – 24</span>
+      </li>
+    </ul>
+  </div>
 </section>
 
 <!-- INTERLUDE -->
